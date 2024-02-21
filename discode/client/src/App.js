@@ -4,6 +4,7 @@
 import InitialScreen from './pages/init/initial_screen';
 import {Route, Routes, MemoryRouter as Router} from 'react-router-dom';
 import ProjectHome from './pages/project/home';
+import MyFlowComponent from './pages/test';
 
 
 function App() {

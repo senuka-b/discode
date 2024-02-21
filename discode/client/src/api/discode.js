@@ -27,9 +27,16 @@ class DiscodeAPI {
 
         const data = await response.json();
 
-        
-
         return data;
+    }
+
+    async fetchComponents() {
+        const response = await fetch(this.url+"/components", {
+            method: "GET"
+        })
+
+
+        return await response.json()
     }
 }
 

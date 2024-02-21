@@ -81,6 +81,7 @@ code {
   background-position: center center;
   -webkit-animation: bg-spin 3s linear infinite;
           animation: bg-spin 3s linear infinite;
+          
 }
 @-webkit-keyframes bg-spin {
   to {

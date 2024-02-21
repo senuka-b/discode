@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Handle, Position } from 'reactflow';
 
-import {Box, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, TextField} from '@mui/material/';
+import {Box, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, TextField, Typography} from '@mui/material/';
 import {Add} from '@mui/icons-material';
 import { pink } from '@mui/material/colors';
 
@@ -98,8 +98,16 @@ function CommandNode({ data }) {
             
         </div>
 
-        <Handle type="target" position={Position.Top} className="w-16 !bg-teal-500" />
-        <Handle type="source" position={Position.Bottom} className="w-16 !bg-teal-500" />
+    
+        <Handle type="target" position={Position.Top} className="w-7 h-4 rounded-lg !bg-orange-500 opacity-60" />
+
+        <p style={{color: "white", opacity: "100%", fontsize: 16, position: 'absolute', top: -30, left: 225,  backgroundColor: "rgba(249,115, 22, 0.5)"} } className='font-thin rounded-md'>Checks</p>
+       
+        <Handle type="source" position={Position.Right} className="w-4 h-7 rounded-lg !bg-green-500 opacity-60" />
+
+        <p style={{color: "white", opacity: "100%", fontsize: 16, position: 'absolute', top: "46.5%", left: "98.7%",  backgroundColor: "rgba(34, 197, 94, 0.5)", transform: 'rotate(90deg)'} } className='font-thin rounded-md'>Actions</p>
+
+    
         </div>
     </div>
 

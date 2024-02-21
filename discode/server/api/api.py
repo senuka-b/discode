@@ -11,6 +11,12 @@ CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 db = Database()
 extension = ExtensionHandler()
 
+COMPONENTS = {
+    "Special components": ["Command", "Event"],
+    "Action components": ["Say", "Kick user"],
+    "Variable components": ["Get server", "Get user", "Get role"],
+}
+
 
 @app.route("/")
 async def home():
@@ -35,6 +41,12 @@ async def create_project():
         await db.create_project(**data)
 
         return return_value, 200
+
+
+@app.route("/components")
+async def get_components():
+
+    return COMPONENTS
 
 
 def run_api():
