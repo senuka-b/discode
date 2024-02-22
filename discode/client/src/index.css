@@ -135,6 +135,8 @@ summary::-webkit-details-marker {
 }
 .tree-nav__item .tree-nav__item {
   margin-left: 2.4rem;
+  padding-bottom: 2px;
+
 }
 .tree-nav__item.is-expandable[open] > .tree-nav__item-title::before {
   font-family: "ionicons";
@@ -160,8 +162,11 @@ summary::-webkit-details-marker {
 .tree-nav__item-title {
   cursor: pointer;
   display: block;
+  font-weight: bold;
   outline: 0;
   color: #fff;
+  background-color: rgb(219 33 211 / 0.05);
+  padding-bottom: 2px;
   font-size: 16;
   line-height: 3.2rem;
   user-select: none;
