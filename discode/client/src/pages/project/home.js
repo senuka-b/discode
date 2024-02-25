@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import ReactFlow, { useNodesState, useEdgesState, addEdge, MiniMap, Controls, Background, Panel, ReactFlowProvider } from 'reactflow';
+import ReactFlow, { useNodesState, useEdgesState, addEdge, MiniMap, Controls, Background, Panel, ReactFlowProvider, MarkerType } from 'reactflow';
 
 import 'reactflow/dist/base.css';
 
@@ -15,12 +15,19 @@ import { useDrop } from 'react-dnd';
 
 
 import TreeView from "./sidebar/treeview";
+import Then from './nodes/edges/then';
+import { Button } from '@mui/material';
+import { HelpOutline, Refresh, Stop, Terminal } from '@mui/icons-material';
 
 
 const nodeTypes = {
   command: CommandNode,
   say: SayNode
 };
+
+const edgeTypes = {
+  then: Then
+}
 
 const _edges = [{ id: '1-2', source: '1', target: '2', label: 'to the', type: 'step' }];
 
@@ -55,32 +62,53 @@ const ProjectHome = () => {
 
   const onConnect = useCallback(
     (params) =>  {
-      
+      console.log("params.source ",params.source)
   
-      setEdges((eds) => addEdge({...params, type: 'smoothstep', label: 'Then'}, eds))}, []
+      setEdges((eds) => addEdge(
+        {...params, type: 'then',
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          width: 20,
+          height: 20,
+          color: '#6ADFDA',
+        },
+        
+ 
+        style: {
+          strokeWidth: 2,
+          stroke: 'rgba(120, 221, 227, 0.42)',
+        },
+
+        data: {
+          "label": "Then ➡️",
+          
+          "variables": params.source.includes("command") ? ["Command Context"] : 
+              params.source.includes("say") ?  ["TextChannel"] : ''
+        }}, eds
+        
+        )
+        
+        )}, []
     
     );
 
 
   const onDragOver = useCallback((event) => {
 
-    console.log("HJI")
-
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   }, []);
 
-  let id = 0;
-const getId = () => `dndnode_${id++}`;
 
   const onDrop = useCallback(
     (event) => {
 
-      console.log("YOO")
 
       event.preventDefault();
 
       const type = event.dataTransfer.getData('application/reactflow');
+
+      console.log("TYPE", type)
 
       // check if the dropped element is valid
       if (typeof type === 'undefined' || !type) {
@@ -92,12 +120,15 @@ const getId = () => `dndnode_${id++}`;
         x: event.clientX,
         y: event.clientY,
       });
+
       const newNode = {
-        id: getId(),
+        id: type+id++,
         type,
         position,
-        data: { label: `asdsad node` },
+        data: { label: `NOT IMPLEMENTED YET NODE` },
       };
+
+      console.log("NEWNODE", newNode.id)
 
       setNodes((nds) => nds.concat(newNode));
     },
@@ -105,7 +136,12 @@ const getId = () => `dndnode_${id++}`;
   );
 
     
- 
+    const reloadBot = (event) => {
+      var data = reactFlowInstance.toObject();
+
+      console.log(data);
+    }
+
   
   return (
 
@@ -128,6 +164,7 @@ const getId = () => `dndnode_${id++}`;
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         onDrop={onDrop}
         onDragOver={onDragOver}
         onInit={setReactFlowInstance}
@@ -138,17 +175,40 @@ const getId = () => `dndnode_${id++}`;
       >
         <Panel position='top-left' >
 
-
           <Sidebar />
-
-          
-
-
 
         </Panel>
 
+        <Panel position='top-right' >
+          <div className='flex flex-col m-2 '>
+            <div className='mb-5'>
+
+              <Button fullWidth variant='contained' size="small" color='success' onClick={reloadBot} startIcon={<Refresh /> } >Reload bot</Button>
+
+
+            </div>
+
+            <div className='mb-5'>
+              <Button fullWidth size="small" variant='contained' color='error' onClick={reloadBot} startIcon={< Stop />} >Stop bot</Button>
+
+
+            </div>
+
+            <div className='mb-5'>
+
+              <Button size="small" variant='contained' color='secondary' onClick={reloadBot} startIcon={< Terminal />} >Open console</Button>
+
+            </div>
+
+
+            <Button size="small" variant='contained' color='info' onClick={reloadBot} startIcon={< HelpOutline />} >Help?</Button>
+
+          </div>
+          
+        </Panel>
+
         <Background variant='dots' />
-        <MiniMap />
+        {/* <MiniMap /> */}
         <Controls />
         
       </ReactFlow>

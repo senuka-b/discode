@@ -1,0 +1,3 @@
+class NodeToCode:
+
+    def parse(self): ...

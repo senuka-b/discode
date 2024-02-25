@@ -40,8 +40,17 @@ function ParameterComponent() {
                 
 
             </Select>
+
+
         </FormControl>
+
+
+
+
+
     </div>
+
+
 
 
     </div>
@@ -50,14 +59,16 @@ function ParameterComponent() {
 
 function CommandNode({ data }) {
  const [parameters, setParameters] = React.useState([])
+ const [paramHandles, setParamHandles] = React.useState([])
+
 
   
 
   const handleCreateParameter = (event) => {
     const param = <ParameterComponent />
-    
+    const paramHandle = <Handle type="source" position={Position.Right} style={{top: 10}} className="w-4 h-7 rounded-lg !bg-green-500 opacity-60" />
 
-    
+    setParamHandles([...paramHandles, paramHandle])
     setParameters([...parameters, param]);
   }
 
@@ -88,10 +99,19 @@ function CommandNode({ data }) {
                     </IconButton>
                 </div>
 
-                <div>
+                <div >
                     {parameters.length !== 0 ? parameters : "You don't have any parameters added!"}
+                    
+      
+                </div>
+                 
+
+                   
+
 
                 </div>
+
+
 
 
             </div>
@@ -103,13 +123,18 @@ function CommandNode({ data }) {
 
         <p style={{color: "white", opacity: "100%", fontsize: 16, position: 'absolute', top: -30, left: 225,  backgroundColor: "rgba(249,115, 22, 0.5)"} } className='font-thin rounded-md'>Checks</p>
        
-        <Handle type="source" position={Position.Right} className="w-4 h-7 rounded-lg !bg-green-500 opacity-60" />
+        <Handle type="source"  id="b" position={Position.Right} className="w-4 h-7 rounded-lg !bg-green-500 opacity-60" />
 
         <p style={{color: "white", opacity: "100%", fontsize: 16, position: 'absolute', top: "46.5%", left: "98.7%",  backgroundColor: "rgba(34, 197, 94, 0.5)", transform: 'rotate(90deg)'} } className='font-thin rounded-md'>Actions</p>
 
+
+        {/* {paramHandles.map((item, index) => (
+
+        ))} */}
+
     
         </div>
-    </div>
+
 
   );
 }
