@@ -20,7 +20,7 @@ const SayNode = ({data, selected}) => {
 
                 <TextField onChange={(event) => {
 
-                    data['label'] = event.target.value;
+                    data['text'] = event.target.value;
          
 
                 }} fullWidth multiline label="Text"  InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}, }}  variant="filled" className='rounded-md nodrag ' error={false} helperText="" required size="small"/>

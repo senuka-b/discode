@@ -38,6 +38,21 @@ class DiscodeAPI {
 
         return await response.json()
     }
+
+    createNewCommand (data) {
+        return new Promise((resolve, reject) => {fetch(this.url+"/commands/create" , {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then((value) => {
+            
+            value.text().then((_data) => {
+               resolve(_data);
+            })
+        })})
+    }
 }
 
 export default DiscodeAPI;

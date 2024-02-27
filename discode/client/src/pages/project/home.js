@@ -52,13 +52,17 @@ const _nodes = [
 ];
 
 let id = 0;
-const getId = () => `dndnode_${id++}`;
+
+
+const api = new DiscodeAPI();
 
 
 const ProjectHome = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(_nodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(_edges);
   const [reactFlowInstance, setReactFlowInstance] = React.useState(null);
+
+  
 
   const onConnect = useCallback(
     (params) =>  {
@@ -139,7 +143,7 @@ const ProjectHome = () => {
     const reloadBot = (event) => {
       var data = reactFlowInstance.toObject();
 
-      console.log(data);
+      api.createNewCommand(data)
     }
 
   

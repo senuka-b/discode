@@ -7,6 +7,7 @@ from flask_cors import CORS
 from discord.ext import commands
 
 from bot.bot import DiscodeBot
+from nodetocode.nodetocode import NodeToCode
 
 
 app = Flask(__name__)
@@ -14,6 +15,7 @@ CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 db = Database()
 extension = ExtensionHandler()
+node_to_code = NodeToCode()
 
 bot: DiscodeBot = None
 
@@ -56,12 +58,18 @@ async def get_components():
     return COMPONENTS
 
 
-@app.route("/test/<text>")
-async def create_command(text):
+@app.route("/commands/create", methods=["POST"])
+async def create_command():
 
-    await bot.create_command(text)
+    if request.method == "POST":
+        data = request.get_json()
 
-    return "success", 200
+        parsed_commands_and_events = node_to_code.parse(data)
+
+        await bot.create_command(parsed_commands_and_events["commands"])
+        # await bot.create_event(parsed_commands_and_events['events']) TODO
+
+        return "success", 200
 
 
 def run_api(bot_instance: commands.Bot):

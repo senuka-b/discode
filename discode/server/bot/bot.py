@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 import os
 
 from bot.cogs.general import General
+from nodetocode.nodetocode import NodeToCode
+
+node_to_code = NodeToCode()
 
 
 class DiscodeBot(commands.Bot):
@@ -27,6 +30,7 @@ class DiscodeBot(commands.Bot):
             **kwargs,
             command_prefix=commands.when_mentioned_or(prefix),
             intents=intents,
+            case_insensitive=True,
         )
         self.logger = logging.getLogger(self.__class__.__name__)
         self.ext_dir = ext_dir
@@ -38,6 +42,7 @@ class DiscodeBot(commands.Bot):
             if filename.endswith(".py") and not filename.startswith("_"):
                 try:
                     await self.load_extension(f"{self.ext_dir}.{filename[:-3]}")
+
                     self.logger.info(f"Loaded extension {filename[:-3]}")
                 except commands.ExtensionError:
                     self.logger.error(
@@ -80,13 +85,19 @@ class DiscodeBot(commands.Bot):
     def uptime(self) -> datetime.timedelta:
         return datetime.datetime.utcnow() - self._uptime
 
-    async def create_command(self, text):
+    async def create_command(self, _commands: dict):
 
-        @commands.command(name="a", cog=General)
-        async def custom_command(ctx):
-            await ctx.send(text)
+        for command in _commands:
 
-        self.add_command(custom_command)
+            @commands.command(name=_commands[command]["name"], cog=General)
+            async def custom_command(ctx: commands.Context):
+                callback = await node_to_code.create_callback(
+                    context=ctx, command=_commands[command]
+                )
+
+                await callback()
+
+            self.add_command(custom_command)
 
 
 def run_bot():
