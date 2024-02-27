@@ -59,16 +59,13 @@ function ParameterComponent() {
 
 function CommandNode({ data }) {
  const [parameters, setParameters] = React.useState([])
- const [paramHandles, setParamHandles] = React.useState([])
 
 
   
 
   const handleCreateParameter = (event) => {
     const param = <ParameterComponent />
-    const paramHandle = <Handle type="source" position={Position.Right} style={{top: 10}} className="w-4 h-7 rounded-lg !bg-green-500 opacity-60" />
 
-    setParamHandles([...paramHandles, paramHandle])
     setParameters([...parameters, param]);
   }
 
@@ -83,12 +80,12 @@ function CommandNode({ data }) {
             <div className="ml-2 mt-1 p-3">
                 <div className="text-lg font-bold">Command</div>
                 <div className="text-gray-500 mt-3">
-                    <TextField  label="Command name" InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}}} variant="filled" className='rounded-md nodrag ' error={false} helperText="" required size="small"/>
+                    <TextField onChange={(event) => data['command_name'] = event.target.value} label="Command name" InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}}} variant="filled" className='rounded-md nodrag ' error={false} helperText="" required size="small"/>
                     
 
                 </div>
                 <div className='mt-2 w-96'>
-                    <TextField  label="Description" fullWidth multiline InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}}} variant="filled" className='rounded-md nodrag mx-6 w-1' helperText="" size="small"/>
+                    <TextField onChange={(event) => data['description'] = event.target.value} label="Description" fullWidth multiline InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}}} variant="filled" className='rounded-md nodrag mx-6 w-1' helperText="" size="small"/>
 
                 </div>
 

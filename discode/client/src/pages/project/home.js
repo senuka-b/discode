@@ -80,7 +80,7 @@ const ProjectHome = () => {
         },
 
         data: {
-          "label": "Then ➡️",
+    
           
           "variables": params.source.includes("command") ? ["Command Context"] : 
               params.source.includes("say") ?  ["TextChannel"] : ''
