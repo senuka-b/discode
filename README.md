@@ -16,7 +16,7 @@ Discode is created with React on top of electron. It uses python as it's backend
 
 Something like this:
 
-![showcase](showcase.mp4)
+https://cdn.discordapp.com/attachments/835864857370296350/1212075122995892284/6tobfI2Xw.mp4
 
 ## Features
 
