@@ -12,6 +12,12 @@ Discode is an application that allows you to create Discord bots without having 
 
 Discode is created with React on top of electron. It uses python as it's backend.
 
+## Showcase
+
+Something like this:
+
+![showcase](showcase.mp4)
+
 ## Features
 
 - Create Discord bots graphically
@@ -26,11 +32,40 @@ Discode is created with React on top of electron. It uses python as it's backend
 
 ## Getting Started
 
-...
+Clone the repo
+
+```bash
+git clone https://github.com/yetimeh/discode
+
+```
+
+Install dependencies
+
+```bash
+cd client && npm install
+```
+
+```bash
+cd ../
+cd server && pip install -r requirements.txt
+```
+
+Run the development server
+
+```bash
+cd server
+python main.py
+```
+
+Run the client 
+```bash
+cd client
+npm run electron:serve
+```
 
 ## Usage
 
-...
+Documentation will be out soon!
 
 ## Note
 
