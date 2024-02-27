@@ -16,7 +16,9 @@ Discode is created with React on top of electron. It uses python as it's backend
 
 Something like this:
 
-![showcase](showcase.mp4)
+https://github.com/yetimeh/discode/assets/111502106/60f7fb57-90f1-4f7f-a147-707b38c43b7a
+
+
 ## Features
 
 - Create Discord bots graphically
