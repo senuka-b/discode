@@ -1,6 +1,7 @@
 import logging
 
 from discord.ext.commands import Context
+from pprint import pprint as p
 
 from .components.say import Say
 
@@ -11,13 +12,6 @@ class NodeToCode:
             "commands": {},
             "events": [],
         }
-
-        self.logger = logging.getLogger("NodeToCode")
-
-        formatter = logging.Formatter("NodeToCode -> %(levelname)s - %(message)s")
-        handler = logging.StreamHandler()
-        handler.setFormatter(formatter)
-        self.logger.addHandler(handler)
 
     def parse(self, data):
         """
@@ -48,9 +42,9 @@ class NodeToCode:
         for node in data["nodes"]:
             if node["type"] == "command":  # Found a command
 
-                self.logger.info(
-                    f"Found command {node['id']} - {node['data']['command_name']}"
-                )
+                # logging.info(
+                #     f"Found command {node['id']} - {node['data']['command_name']}"
+                # )
 
                 self.data["commands"][node["id"]] = {
                     "name": node["data"]["command_name"],
@@ -83,6 +77,8 @@ class NodeToCode:
             for action in self.get_actions_with_edge(data, edge["target"]):
                 build_tree(action)
 
+        p(tree)
+
         return tree  # TODO: Improve this code? if it works it works
 
     def get_edges_of_action(self, data, node_id):
@@ -111,6 +107,9 @@ class NodeToCode:
         executions = []
 
         for action in command["actions"]:
+
+            print("command name: ", command["name"])
+
             if action["type"] == "say":
                 action["data"][
                     "channel"
@@ -119,6 +118,7 @@ class NodeToCode:
                 )  # TODO: Implement checking if other variables are attached
 
                 say_action = Say(command_data=action["data"])
+
                 executions.append(say_action)
 
         async def callback(**kwargs):

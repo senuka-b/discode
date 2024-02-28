@@ -80,12 +80,12 @@ function CommandNode({ data }) {
             <div className="ml-2 mt-1 p-3">
                 <div className="text-lg font-bold">Command</div>
                 <div className="text-gray-500 mt-3">
-                    <TextField onChange={(event) => data['command_name'] = event.target.value} label="Command name" InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}}} variant="filled" className='rounded-md nodrag ' error={false} helperText="" required size="small"/>
+                    <TextField onChange={(event) => data['command_name'] = event.target.value}  value={data['command_name']} label="Command name" InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}}} variant="filled" className='rounded-md nodrag ' error={false} helperText="" required size="small"/>
                     
 
                 </div>
                 <div className='mt-2 w-96'>
-                    <TextField onChange={(event) => data['description'] = event.target.value} label="Description" fullWidth multiline InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}}} variant="filled" className='rounded-md nodrag mx-6 w-1' helperText="" size="small"/>
+                    <TextField onChange={(event) => data['description'] = event.target.value} value={data['description']} label="Description" fullWidth multiline InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}}} variant="filled" className='rounded-md nodrag mx-6 w-1' helperText="" size="small"/>
 
                 </div>
 

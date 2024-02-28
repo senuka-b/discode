@@ -66,7 +66,9 @@ async def create_command():
 
         parsed_commands_and_events = node_to_code.parse(data)
 
-        await bot.create_command(parsed_commands_and_events["commands"])
+        for command in parsed_commands_and_events["commands"]:
+
+            await bot.create_command(parsed_commands_and_events["commands"][command])
         # await bot.create_event(parsed_commands_and_events['events']) TODO
 
         return "success", 200

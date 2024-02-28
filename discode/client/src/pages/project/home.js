@@ -4,17 +4,12 @@ import ReactFlow, { useNodesState, useEdgesState, addEdge, MiniMap, Controls, Ba
 import 'reactflow/dist/base.css';
 
 
-
 import DiscodeAPI from '../../api/discode';
-
 
 import CommandNode from './nodes/command';
 import SayNode from './nodes/say';
 import Sidebar from './sidebar/sidebar';
-import { useDrop } from 'react-dnd';
 
-
-import TreeView from "./sidebar/treeview";
 import Then from './nodes/edges/then';
 import { Button } from '@mui/material';
 import { HelpOutline, Refresh, Stop, Terminal } from '@mui/icons-material';
@@ -29,26 +24,10 @@ const edgeTypes = {
   then: Then
 }
 
-const _edges = [{ id: '1-2', source: '1', target: '2', label: 'to the', type: 'step' }];
+const _edges = [];
 
 const _nodes = [
-  {
-    id: '1',
-    data: { label: 'Hello' },
-    position: { x: 0, y: 0 },
-    type: 'input',
-  },
-  {
-    id: '2',
-    data: { label: 'World' },
-    position: { x: 100, y: 100 },
-  },
-  {
-    id: '3',
-    type: 'say',
-    position: { x: 100, y: 100 },
 
-  }
 ];
 
 let id = 0;
@@ -60,7 +39,7 @@ const api = new DiscodeAPI();
 const ProjectHome = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(_nodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(_edges);
-  const [reactFlowInstance, setReactFlowInstance] = React.useState(null);
+  const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
   
 

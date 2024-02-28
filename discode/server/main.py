@@ -1,5 +1,4 @@
 from api.api import run_api
-from bot.bot import run_bot
 
 
 import threading, os, discord

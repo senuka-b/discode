@@ -85,21 +85,12 @@ class DiscodeBot(commands.Bot):
     def uptime(self) -> datetime.timedelta:
         return datetime.datetime.utcnow() - self._uptime
 
-    async def create_command(self, _commands: dict):
+    async def create_command(self, _command: dict):
 
-        for command in _commands:
+        @commands.command(name=_command["name"], cog=General)
+        async def custom_command(ctx: commands.Context):
+            callback = await node_to_code.create_callback(context=ctx, command=_command)
 
-            @commands.command(name=_commands[command]["name"], cog=General)
-            async def custom_command(ctx: commands.Context):
-                callback = await node_to_code.create_callback(
-                    context=ctx, command=_commands[command]
-                )
+            await callback()
 
-                await callback()
-
-            self.add_command(custom_command)
-
-
-def run_bot():
-    bot = DiscodeBot(command_prefix="!", intents=discord.Intents.all())
-    bot.run(os.getenv("TOKEN"))
+        self.add_command(custom_command)

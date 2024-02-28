@@ -23,7 +23,7 @@ const SayNode = ({data, selected}) => {
                     data['text'] = event.target.value;
          
 
-                }} fullWidth multiline label="Text"  InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}, }}  variant="filled" className='rounded-md nodrag ' error={false} helperText="" required size="small"/>
+                }} fullWidth value={data['text']} multiline label="Text"  InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}, }}  variant="filled" className='rounded-md nodrag ' error={false} helperText="" required size="small"/>
 
 
             </div>
