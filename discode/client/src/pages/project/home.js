@@ -13,11 +13,13 @@ import Sidebar from './sidebar/sidebar';
 import Then from './nodes/edges/then';
 import { Button } from '@mui/material';
 import { HelpOutline, Refresh, Stop, Terminal } from '@mui/icons-material';
+import GetChannel from './nodes/get_channel';
 
 
 const nodeTypes = {
   command: CommandNode,
-  say: SayNode
+  say: SayNode,
+  get_channel: GetChannel
 };
 
 const edgeTypes = {
@@ -45,8 +47,34 @@ const ProjectHome = () => {
 
   const onConnect = useCallback(
     (params) =>  {
-      console.log("params.source ",params.source)
+
+      console.log("Source: ", params.source)
+
   
+
+      if (params.source.includes("get")) {
+        var target = nodes.find(n => n.id === params.target);
+
+
+
+        const updated_data = { ...target.data };
+
+        console.log(typeof(updated_data.variables))
+
+        updated_data.variables.push(params.source);
+
+        const updated_nodes = nodes.map(node => {
+          if (node.id === params.target) {
+            return { ...node, data: updated_data };
+          }
+          return node;
+        });
+
+        setNodes(updated_nodes);
+        console.log(updated_nodes)
+
+      }
+
       setEdges((eds) => addEdge(
         {...params, type: 'then',
         markerEnd: {
@@ -62,11 +90,13 @@ const ProjectHome = () => {
           stroke: 'rgba(120, 221, 227, 0.42)',
         },
 
+        
+
         data: {
-    
           
           "variables": params.source.includes("command") ? ["Command Context"] : 
-              params.source.includes("say") ?  ["TextChannel"] : ''
+              params.source.includes("say") ?  ["TextChannel"] : 
+              params.source.includes("get_channel") ? ["TextChannel", ] : "",
         }}, eds
         
         )
@@ -91,7 +121,7 @@ const ProjectHome = () => {
 
       const type = event.dataTransfer.getData('application/reactflow');
 
-      console.log("TYPE", type)
+
 
       // check if the dropped element is valid
       if (typeof type === 'undefined' || !type) {
@@ -104,11 +134,14 @@ const ProjectHome = () => {
         y: event.clientY,
       });
 
+    
+
       const newNode = {
-        id: type+id++,
-        type,
+        id: type.toLowerCase().replace(" ", "_")+id++,
+        type: type.toLowerCase().replace(" ", "_"),
         position,
-        data: { label: `NOT IMPLEMENTED YET NODE` },
+      
+        data: { label: `NOT IMPLEMENTED YET NODE`, variables: [] },
       };
 
       console.log("NEWNODE", newNode.id)

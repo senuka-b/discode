@@ -4,6 +4,8 @@ from discord.ext.commands import Context
 from pprint import pprint as p
 
 from .components.say import Say
+from .components.get_channel import GetChannel
+from ..errors import ChannelNotFound
 
 
 class NodeToCode:
@@ -77,8 +79,6 @@ class NodeToCode:
             for action in self.get_actions_with_edge(data, edge["target"]):
                 build_tree(action)
 
-        p(tree)
-
         return tree  # TODO: Improve this code? if it works it works
 
     def get_edges_of_action(self, data, node_id):
@@ -106,20 +106,29 @@ class NodeToCode:
 
         executions = []
 
+        variables = {}
+
         for action in command["actions"]:
 
-            print("command name: ", command["name"])
-
             if action["type"] == "say":
-                action["data"][
-                    "channel"
-                ] = (
-                    context.channel
-                )  # TODO: Implement checking if other variables are attached
+
+                p(variables)
+
+                variable = action["data"].get("variables", [])
+
+                if variable:
+                    if not variables[variable[0]]:
+                        raise ChannelNotFound(variable[0])
 
                 say_action = Say(command_data=action["data"])
 
                 executions.append(say_action)
+
+            elif action["type"] == "get_channel":
+
+                channel = await GetChannel(context, action["data"]["text"]).execute()
+
+                variables[action["id"]] = channel
 
         async def callback(**kwargs):
             [await cmd.execute(**kwargs) for cmd in executions]

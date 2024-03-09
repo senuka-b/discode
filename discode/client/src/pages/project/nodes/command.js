@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { Handle, Position } from 'reactflow';
 
 import {Box, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, TextField, Typography} from '@mui/material/';
@@ -60,6 +60,9 @@ function ParameterComponent() {
 function CommandNode({ data }) {
  const [parameters, setParameters] = React.useState([])
 
+ const [command_name, setCommand_name] = useState(data['command_name'])
+ const [description, setDescription] = useState(data['description'])
+
 
   
 
@@ -80,12 +83,12 @@ function CommandNode({ data }) {
             <div className="ml-2 mt-1 p-3">
                 <div className="text-lg font-bold">Command</div>
                 <div className="text-gray-500 mt-3">
-                    <TextField onChange={(event) => data['command_name'] = event.target.value}  value={data['command_name']} label="Command name" InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}}} variant="filled" className='rounded-md nodrag ' error={false} helperText="" required size="small"/>
+                    <TextField onChange={(event) => {data['command_name'] = event.target.value; setCommand_name(event.target.value)}}  value={command_name} label="Command name" InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}}} variant="filled" className='rounded-md nodrag ' error={false} helperText="" required size="small"/>
                     
 
                 </div>
                 <div className='mt-2 w-96'>
-                    <TextField onChange={(event) => data['description'] = event.target.value} value={data['description']} label="Description" fullWidth multiline InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}}} variant="filled" className='rounded-md nodrag mx-6 w-1' helperText="" size="small"/>
+                    <TextField onChange={(event) => {data['description'] = event.target.value; setDescription(event.target.value)}} value={description} label="Description" fullWidth multiline InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}}} variant="filled" className='rounded-md nodrag mx-6 w-1' helperText="" size="small"/>
 
                 </div>
 

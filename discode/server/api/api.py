@@ -69,9 +69,16 @@ async def create_command():
         for command in parsed_commands_and_events["commands"]:
 
             await bot.create_command(parsed_commands_and_events["commands"][command])
+
         # await bot.create_event(parsed_commands_and_events['events']) TODO
 
         return "success", 200
+
+
+@app.errorhandler(500)
+def internal_server_error(error):
+    print("ERROR", error)
+    return "ASDASD", 500
 
 
 def run_api(bot_instance: commands.Bot):

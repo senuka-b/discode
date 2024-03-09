@@ -6,6 +6,8 @@ import { Handle, NodeResizer, Position } from 'reactflow';
 
 const SayNode = ({data, selected}) => {
 
+    const [text, setText] = useState(data['text'])
+
   
     return ( 
 
@@ -20,10 +22,13 @@ const SayNode = ({data, selected}) => {
 
                 <TextField onChange={(event) => {
 
-                    data['text'] = event.target.value;
+                    setText(event.target.value);
+
+                    data['text'] = text;
+            
          
 
-                }} fullWidth value={data['text']} multiline label="Text"  InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}, }}  variant="filled" className='rounded-md nodrag ' error={false} helperText="" required size="small"/>
+                }} fullWidth value={text} multiline label="Text"  InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}, }}  variant="filled" className='rounded-md nodrag ' error={false} helperText="" required size="small"/>
 
 
             </div>

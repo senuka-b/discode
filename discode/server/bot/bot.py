@@ -8,6 +8,8 @@ import os
 from bot.cogs.general import General
 from nodetocode.nodetocode import NodeToCode
 
+from ..errors import ChannelNotFound
+
 node_to_code = NodeToCode()
 
 
@@ -87,10 +89,15 @@ class DiscodeBot(commands.Bot):
 
     async def create_command(self, _command: dict):
 
-        @commands.command(name=_command["name"], cog=General)
+        @commands.command(name=_command["name"])
         async def custom_command(ctx: commands.Context):
             callback = await node_to_code.create_callback(context=ctx, command=_command)
 
             await callback()
 
-        self.add_command(custom_command)
+        try:
+            self.add_command(custom_command)
+
+        except commands.CommandRegistrationError as e:
+            self.remove_command(e.name)
+            self.add_command(custom_command)
