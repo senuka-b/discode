@@ -16,4 +16,6 @@ class GetChannel(BaseCommand):
 
             return self.context.guild.get_channel(self.channel)
 
+        print(self.channel)
+
         return discord.utils.get(self.context.guild.channels, name=self.channel)

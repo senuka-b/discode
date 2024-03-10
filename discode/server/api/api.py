@@ -9,9 +9,16 @@ from discord.ext import commands
 from bot.bot import DiscodeBot
 from nodetocode.nodetocode import NodeToCode
 
+from flask_socketio import SocketIO
+
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+
+CORS(app)
+
+
+socket = SocketIO(app, cors_allowed_origins="*")
+
 
 db = Database()
 extension = ExtensionHandler()
@@ -68,21 +75,23 @@ async def create_command():
 
         for command in parsed_commands_and_events["commands"]:
 
-            await bot.create_command(parsed_commands_and_events["commands"][command])
-
-        # await bot.create_event(parsed_commands_and_events['events']) TODO
+            await bot.create_command(
+                trigger_error, parsed_commands_and_events["commands"][command]
+            )
 
         return "success", 200
 
+        # await bot.create_event(parsed_commands_and_events['events']) TODO
 
-@app.errorhandler(500)
-def internal_server_error(error):
-    print("ERROR", error)
-    return "ASDASD", 500
+
+def trigger_error(error: str):
+    print("EMMITED")
+
+    socket.emit("error", {"message": error})
 
 
 def run_api(bot_instance: commands.Bot):
     global bot
     bot = bot_instance
 
-    app.run()
+    socket.run(app)

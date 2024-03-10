@@ -27,7 +27,7 @@ const GetChannel = ({data, selected}) => {
 
                     setText(event.target.value);
 
-                    data['text'] = text;
+                    data['text'] = event.target.value;
             
          
 

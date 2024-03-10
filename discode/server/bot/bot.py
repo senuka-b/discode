@@ -8,7 +8,7 @@ import os
 from bot.cogs.general import General
 from nodetocode.nodetocode import NodeToCode
 
-from ..errors import ChannelNotFound
+from errors import ChannelNotFound
 
 node_to_code = NodeToCode()
 
@@ -87,11 +87,16 @@ class DiscodeBot(commands.Bot):
     def uptime(self) -> datetime.timedelta:
         return datetime.datetime.utcnow() - self._uptime
 
-    async def create_command(self, _command: dict):
+    async def create_command(self, trigger_error, _command: dict):
 
         @commands.command(name=_command["name"])
         async def custom_command(ctx: commands.Context):
-            callback = await node_to_code.create_callback(context=ctx, command=_command)
+            try:
+                callback = await node_to_code.create_callback(
+                    context=ctx, command=_command
+                )
+            except ChannelNotFound as e:
+                trigger_error(e.message)
 
             await callback()
 

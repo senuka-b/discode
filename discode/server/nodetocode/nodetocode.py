@@ -3,9 +3,14 @@ import logging
 from discord.ext.commands import Context
 from pprint import pprint as p
 
+import sys
+
+sys.path.append("..")
+
+from errors import ChannelNotFound
+
 from .components.say import Say
 from .components.get_channel import GetChannel
-from ..errors import ChannelNotFound
 
 
 class NodeToCode:
@@ -118,7 +123,9 @@ class NodeToCode:
 
                 if variable:
                     if not variables[variable[0]]:
-                        raise ChannelNotFound(variable[0])
+                        raise ChannelNotFound(message=variable[0])
+                    else:
+                        action["data"]["channel"] = variables[variable[0]]
 
                 say_action = Say(command_data=action["data"])
 

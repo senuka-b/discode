@@ -24,7 +24,7 @@ const SayNode = ({data, selected}) => {
 
                     setText(event.target.value);
 
-                    data['text'] = text;
+                    data['text'] = event.target.value;
             
          
 

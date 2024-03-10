@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import ReactFlow, { useNodesState, useEdgesState, addEdge, MiniMap, Controls, Background, Panel, ReactFlowProvider, MarkerType } from 'reactflow';
 
 import 'reactflow/dist/base.css';
@@ -14,6 +14,9 @@ import Then from './nodes/edges/then';
 import { Button } from '@mui/material';
 import { HelpOutline, Refresh, Stop, Terminal } from '@mui/icons-material';
 import GetChannel from './nodes/get_channel';
+
+import io from "socket.io-client";
+const socket = io("http://localhost:5000")
 
 
 const nodeTypes = {
@@ -43,12 +46,25 @@ const ProjectHome = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(_edges);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
+
+  useEffect(() => {
+    // Listen for error messages from the backend
+    socket.on('error', ({ message }) => {
+      console.log(message);
+    });
+
+    // Clean up event listener
+    return () => {
+      socket.off('error');
+    };
+  }, []);
   
 
   const onConnect = useCallback(
     (params) =>  {
 
       console.log("Source: ", params.source)
+      console.log("Target: ", params.target)
 
   
 
@@ -56,10 +72,11 @@ const ProjectHome = () => {
         var target = nodes.find(n => n.id === params.target);
 
 
+        console.log(target)
 
         const updated_data = { ...target.data };
 
-        console.log(typeof(updated_data.variables))
+
 
         updated_data.variables.push(params.source);
 
