@@ -1,7 +1,7 @@
 import React, { memo, useState } from 'react';
 import { Handle, Position } from 'reactflow';
 
-import {Box, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, TextField, Typography} from '@mui/material/';
+import {Box, Checkbox, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, TextField, Typography} from '@mui/material/';
 import {Add} from '@mui/icons-material';
 import { pink } from '@mui/material/colors';
 
@@ -42,13 +42,26 @@ function ParameterComponent() {
             </Select>
 
 
+
         </FormControl>
 
 
 
 
 
+
+
     </div>
+
+    <Checkbox title='Required?'  sx={{
+    color: pink[800],
+    '&.Mui-checked': {
+      color: pink[600],
+    },
+  }}/>
+
+    
+
 
 
 

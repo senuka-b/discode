@@ -121,6 +121,7 @@ class NodeToCode:
                 variable = action["data"].get("variables", [])
 
                 p(variables)
+                print(action["id"], variable)
 
                 if variable:
                     if not variables.get(variable[0], None):
@@ -128,6 +129,7 @@ class NodeToCode:
                     else:
                         action["data"]["channel"] = variables[variable[0]]
                 else:
+
                     action["data"]["channel"] = context.channel
 
                 say_action = Say(context=context, command_data=action["data"])
@@ -136,16 +138,28 @@ class NodeToCode:
 
             elif action["type"] == "get_channel":
 
-                channel = await GetChannel(context, action["data"]["text"]).execute()
+                channel_action = GetChannel(context, action["data"]["text"])
 
-                variables[action["id"]] = channel
+                variables[action["id"]] = await channel_action.execute()
 
         async def callback(**kwargs):
             prev_result = None
 
             for cmd in executions:  # MY attempt to chain the resultants of each action
-                if isinstance(prev_result, discord.Message):
+
+                if (
+                    isinstance(prev_result, discord.Message)
+                    and not cmd.command_data["variables"]
+                ):
                     prev_result = await cmd.execute(channel=prev_result.channel)
+
+                    continue
+
+                if (
+                    isinstance(prev_result, discord.TextChannel)
+                    and not cmd.command_data["variables"]
+                ):
+                    prev_result = await cmd.execute(channel=prev_result)
 
                     continue
 

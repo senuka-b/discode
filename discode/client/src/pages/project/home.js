@@ -126,7 +126,7 @@ const ProjectHome = () => {
         data: {
 
           "variables": params.source.includes("command") ? ["Command Context"] :
-              params.source.includes("say") ?  ["TextChannel"] :
+              params.source.includes("say") ?  ["TextChannel", "Message"] :
               params.source.includes("get_channel") ? ["TextChannel", ] : "",
         }}, eds
 

@@ -59,10 +59,15 @@ const Then = ({
         >
         <div style={{ display: 'flex', flexDirection: 'row' }}>
       {data.variables.map((item, index) => (
-        <div style={{ marginRight: '10px', }} className='font-medium bg-slate-500/35 '>
-          {item }
-          
-        </div>
+          <React.Fragment key={index}>
+            <div className='pr-3 '>
+            {index !== 0 && "  +  "}
+
+            </div>
+            <div style={{ marginRight: '10px' }} className='font-medium bg-slate-500/35'>
+                {item}
+            </div>
+        </React.Fragment>
       ))}
     </div>
         </div>

@@ -14,8 +14,6 @@ class GetChannel(BaseCommand):
         if self.channel.isnumeric():
             self.channel = int(self.channel)
 
-            return self.context.guild.get_channel(self.channel)
+            return self.context.bot.get_channel(self.channel)
 
-        print(self.channel)
-
-        return discord.utils.get(self.context.guild.channels, name=self.channel)
+        return discord.utils.get(self.context.bot.get_all_channels(), name=self.channel)
