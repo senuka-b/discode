@@ -35,7 +35,7 @@ const _nodes = [
 
 ];
 
-let id = 0;
+var id = 0;
 
 
 const api = new DiscodeAPI();
@@ -48,17 +48,30 @@ const ProjectHome = () => {
 
 
   useEffect(() => {
-    // Listen for error messages from the backend
     socket.on('error', ({ message }) => {
       console.log(message);
     });
 
-    // Clean up event listener
     return () => {
       socket.off('error');
     };
   }, []);
+
+  const onNodeDelete = useCallback((params) => {
+    console.log(params, "Node deleted");
   
+    setNodes((prevNodes) => {
+      return prevNodes.map(element => {
+        if (element.data.variables) {
+
+          params.forEach(deleted_node => {
+            element.data.variables = element.data.variables.filter(_var => _var !== deleted_node.id);
+          });
+        }
+        return element;
+      });
+    });
+  }, []);
 
   const onConnect = useCallback(
     (params) =>  {
@@ -66,29 +79,30 @@ const ProjectHome = () => {
       console.log("Source: ", params.source)
       console.log("Target: ", params.target)
 
-  
 
       if (params.source.includes("get")) {
-        var target = nodes.find(n => n.id === params.target);
+        setNodes((prevNodes) => {
+          const target_node = prevNodes.find(node => node.id === params.target);
 
+          if (target_node) {
 
-        console.log(target)
-
-        const updated_data = { ...target.data };
-
-
-
-        updated_data.variables.push(params.source);
-
-        const updated_nodes = nodes.map(node => {
-          if (node.id === params.target) {
-            return { ...node, data: updated_data };
+            const updatedData = { ...target_node.data };
+            
+            updatedData.variables.push(params.source);
+            
+            const updatedNodes = prevNodes.map(node => {
+              if (node.id === params.target) {
+                return { ...node, data: updatedData };
+              }
+              return node;
+            });
+      
+            return updatedNodes;
           }
-          return node;
+          
+     
+          return prevNodes;
         });
-
-        setNodes(updated_nodes);
-        console.log(updated_nodes)
 
       }
 
@@ -100,26 +114,26 @@ const ProjectHome = () => {
           height: 20,
           color: '#6ADFDA',
         },
-        
- 
+
+
         style: {
           strokeWidth: 2,
           stroke: 'rgba(120, 221, 227, 0.42)',
         },
 
-        
+
 
         data: {
-          
-          "variables": params.source.includes("command") ? ["Command Context"] : 
-              params.source.includes("say") ?  ["TextChannel"] : 
+
+          "variables": params.source.includes("command") ? ["Command Context"] :
+              params.source.includes("say") ?  ["TextChannel"] :
               params.source.includes("get_channel") ? ["TextChannel", ] : "",
         }}, eds
-        
+
         )
-        
+
         )}, []
-    
+
     );
 
 
@@ -151,31 +165,34 @@ const ProjectHome = () => {
         y: event.clientY,
       });
 
-    
+
 
       const newNode = {
         id: type.toLowerCase().replace(" ", "_")+id++,
         type: type.toLowerCase().replace(" ", "_"),
         position,
-      
+
         data: { label: `NOT IMPLEMENTED YET NODE`, variables: [] },
       };
 
       console.log("NEWNODE", newNode.id)
 
       setNodes((nds) => nds.concat(newNode));
+
     },
     [reactFlowInstance],
   );
 
-    
+
     const reloadBot = (event) => {
       var data = reactFlowInstance.toObject();
+
+      console.log(data)
 
       api.createNewCommand(data)
     }
 
-  
+
   return (
 
 
@@ -186,8 +203,8 @@ const ProjectHome = () => {
       <div  style={{
         height: "100vh",
         width: "100wh"
-        
-        
+
+
       }}>
       <ReactFlow
 
@@ -196,12 +213,13 @@ const ProjectHome = () => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onNodesDelete={onNodeDelete}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         onDrop={onDrop}
         onDragOver={onDragOver}
         onInit={setReactFlowInstance}
-        
+
 
 
 
@@ -237,13 +255,13 @@ const ProjectHome = () => {
             <Button size="small" variant='contained' color='info' onClick={reloadBot} startIcon={< HelpOutline />} >Help?</Button>
 
           </div>
-          
+
         </Panel>
 
         <Background variant='dots' />
         {/* <MiniMap /> */}
         <Controls />
-        
+
       </ReactFlow>
 
       </div>

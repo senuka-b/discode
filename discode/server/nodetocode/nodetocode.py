@@ -1,4 +1,5 @@
 import logging
+import discord
 
 from discord.ext.commands import Context
 from pprint import pprint as p
@@ -117,17 +118,19 @@ class NodeToCode:
 
             if action["type"] == "say":
 
-                p(variables)
-
                 variable = action["data"].get("variables", [])
 
+                p(variables)
+
                 if variable:
-                    if not variables[variable[0]]:
+                    if not variables.get(variable[0], None):
                         raise ChannelNotFound(message=variable[0])
                     else:
                         action["data"]["channel"] = variables[variable[0]]
+                else:
+                    action["data"]["channel"] = context.channel
 
-                say_action = Say(command_data=action["data"])
+                say_action = Say(context=context, command_data=action["data"])
 
                 executions.append(say_action)
 
@@ -138,6 +141,14 @@ class NodeToCode:
                 variables[action["id"]] = channel
 
         async def callback(**kwargs):
-            [await cmd.execute(**kwargs) for cmd in executions]
+            prev_result = None
+
+            for cmd in executions:  # MY attempt to chain the resultants of each action
+                if isinstance(prev_result, discord.Message):
+                    prev_result = await cmd.execute(channel=prev_result.channel)
+
+                    continue
+
+                prev_result = await cmd.execute()
 
         return callback
