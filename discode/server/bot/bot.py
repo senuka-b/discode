@@ -1,4 +1,8 @@
+import inspect
+import types
 import discord, datetime, aiohttp, traceback, os, logging, typing
+
+from pprint import pprint as p
 
 from discord.ext import commands
 
@@ -8,9 +12,11 @@ import os
 from bot.cogs.general import General
 from nodetocode.nodetocode import NodeToCode
 
-from errors import ChannelNotFound
+from errors import ChannelNotFound, NoArgumentsPassed
 
 node_to_code = NodeToCode()
+
+from functools import wraps
 
 
 class DiscodeBot(commands.Bot):
@@ -89,20 +95,30 @@ class DiscodeBot(commands.Bot):
 
     async def create_command(self, trigger_error, _command: dict):
 
-        @commands.command(name=_command["name"])
-        async def custom_command(ctx: commands.Context):
+        p(_command)
+
+        @commands.command(
+            name=_command["name"], description=_command["description"] or ""
+        )
+        async def custom_command(ctx: commands.Context, *, arguments: str = None):
             try:
+
                 callback = await node_to_code.create_callback(
-                    context=ctx, command=_command
+                    context=ctx, command=_command, arguments=arguments
                 )
 
             except ChannelNotFound as e:
                 trigger_error(e.message)
                 return
 
+            except NoArgumentsPassed as e:
+                trigger_error(e.message)
+                return
+
             await callback()
 
         try:
+
             self.add_command(custom_command)
 
         except commands.CommandRegistrationError as e:

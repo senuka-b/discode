@@ -1,23 +1,42 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { Handle, Position } from 'reactflow';
 
-import {Box, Checkbox, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, TextField, Typography} from '@mui/material/';
+import {Box, Checkbox, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, TextField} from '@mui/material/';
 import {Add} from '@mui/icons-material';
 import { pink } from '@mui/material/colors';
 
 import { v4 as uuidv4 } from 'uuid';
 
 
-function ParameterComponent() {
-    const [paramType, setParamType] = React.useState('');
+function ParameterComponent({data, index,}) {
+    const [paramName, setparamName] = useState('')
+    const [paramType, setParamType] = useState('');
+    const [required, setRequired] = useState(false);
 
-    const handleChange = (event) => {
+
+    const handleParamTypeChange = (event) => {
         setParamType(event.target.value);
       };
 
+    const handleParamNameChange = (event) => {
+        setparamName(event.target.value)
+    }
+
+    const handleRequiredChange = (event) => {
+        setRequired((is_checked) => !is_checked);
+    }
+     
+
+    useEffect(() => {
+        data["parameters"][index] = { paramName, paramType, required };
+
+   
+    }, [paramName, paramType, required]);
+
+
 
     return  <div key = {uuidv4} className='items-start mt-2 flex justify-between'>
-    <TextField  label="Parameter name" InputLabelProps={{style: { color: 'white', opacity: '70%',  paddingTop: 2}, }} inputProps={{style: { color: 'white',}}} variant="filled" className='rounded-md nodrag h-1' error={false} helperText="" required size="small" sx={{width:160}} />
+    <TextField  label="Parameter name" onChange={handleParamNameChange} value={paramName} InputLabelProps={{style: { color: 'white', opacity: '70%',  paddingTop: 2}, }} inputProps={{style: { color: 'white',}}} variant="filled" className='rounded-md nodrag h-1' error={false} helperText="" required size="small" sx={{width:160}} />
 
                 
     <div className='flex-grow ml-5'>
@@ -25,18 +44,21 @@ function ParameterComponent() {
         <FormControl required  fullWidth  variant='filled' >
             <InputLabel id="parameter-type-label" style={{color: "white", opacity: "70%", }}>Parameter type</InputLabel>
 
-            <Select labelId='parameter-type-label' value={paramType} onChange={handleChange}   className='nodrag ' defaultValue={'member'} sx={{color: 'yellow', height: 47}} color="success" MenuProps={{
+            <Select labelId='parameter-type-label' value={paramType} onChange={handleParamTypeChange}   className='nodrag ' defaultValue={'member'} sx={{color: 'yellow', height: 47}} color="success" MenuProps={{
                  PaperProps: {
                     style: {
                     backgroundColor: pink[100], 
                     },
                 },}} >
+
                 <MenuItem value={1}>Member</MenuItem>
-                <MenuItem value={2}>Channel</MenuItem>
+                <MenuItem value={2}>TextChannel</MenuItem>
                 <MenuItem value={3}>Text</MenuItem>
                 <MenuItem value={4}>Number</MenuItem>
+                <MenuItem value={5}>Role</MenuItem>
+                <MenuItem value={6}>Server</MenuItem>
+                <MenuItem value={7}>User</MenuItem>
 
-                // Fetch from API 
                 
 
             </Select>
@@ -53,12 +75,15 @@ function ParameterComponent() {
 
     </div>
 
-    <Checkbox title='Required?'  sx={{
-    color: pink[800],
-    '&.Mui-checked': {
-      color: pink[600],
-    },
-  }}/>
+        <Checkbox title='Required?'  sx={{
+            color: pink[800],
+            '&.Mui-checked': {
+            color: pink[600],
+            },
+
+            
+        }} onChange={handleRequiredChange}
+            checked={required}/>
 
     
 
@@ -80,9 +105,29 @@ function CommandNode({ data }) {
   
 
   const handleCreateParameter = (event) => {
-    const param = <ParameterComponent />
+
+
+    data["parameters"].push(
+        {
+            paramName: "",
+            paramType: "",
+            required: false
+        }
+    )
+
+    const param = <ParameterComponent 
+        data={data}
+        index={parameters.length}
+
+    />
+
+
 
     setParameters([...parameters, param]);
+
+
+
+    
   }
 
   return (

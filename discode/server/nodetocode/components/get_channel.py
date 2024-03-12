@@ -4,12 +4,17 @@ from discord.ext.commands import Context
 
 
 class GetChannel(BaseCommand):
-    def __init__(self, context: Context, channel):
+    def __init__(self, context: Context, channel, arguments):
+
+        self.arguments = arguments
 
         self.context = context
         self.channel = channel
 
     async def execute(self):
+
+        if self.arguments:
+            self.channel = self.channel.format(**dict(self.arguments))
 
         if self.channel.isnumeric():
             self.channel = int(self.channel)

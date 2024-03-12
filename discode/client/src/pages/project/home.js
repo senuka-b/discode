@@ -172,7 +172,7 @@ const ProjectHome = () => {
         type: type.toLowerCase().replace(" ", "_"),
         position,
 
-        data: { label: `NOT IMPLEMENTED YET NODE`, variables: [] },
+        data: { label: `NOT IMPLEMENTED YET NODE`, variables: [], parameters: [] },
       };
 
       console.log("NEWNODE", newNode.id)

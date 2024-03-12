@@ -1,17 +1,25 @@
 import logging
 import discord
 
+
+from discord.ext import commands
 from discord.ext.commands import Context
 from pprint import pprint as p
 
 import sys
+import re
 
 sys.path.append("..")
 
-from errors import ChannelNotFound
+from errors import ChannelNotFound, NoArgumentsPassed
 
 from .components.say import Say
 from .components.get_channel import GetChannel
+
+
+class NonePlaceholder:
+    def __getattr__(self, attr_name):
+        return "`undefined`"
 
 
 class NodeToCode:
@@ -29,6 +37,13 @@ class NodeToCode:
                     "command_id": {
                         "name": command_name
                         "description: description
+                        "params": [
+                            {
+                                "paramName": parameter_name
+                                "paramType": parameter_type
+                                "required": is_required(bool)
+                            }
+                        ]
 
                         "actions": [
                             {
@@ -54,9 +69,20 @@ class NodeToCode:
                 #     f"Found command {node['id']} - {node['data']['command_name']}"
                 # )
 
+                p(
+                    self.parse_parameters(node["data"]["parameters"])
+                    if node["data"]["parameters"]
+                    else None
+                )
+
                 self.data["commands"][node["id"]] = {
                     "name": node["data"]["command_name"],
                     "description": node["data"].get("description", None),
+                    "parameters": (
+                        self.parse_parameters(node["data"]["parameters"])
+                        if node["data"]["parameters"]
+                        else None
+                    ),
                     "actions": self.get_actions(data, node["id"]),
                 }
 
@@ -64,6 +90,143 @@ class NodeToCode:
                 ...  # TODO: Implement event support
 
         return self.data
+
+    def parse_parameters(self, params: list):
+        data = []
+
+        parameter_types = {
+            1: discord.Member,
+            2: discord.TextChannel,
+            3: str,
+            4: int,
+            5: discord.Role,
+            6: discord.Guild,
+            7: discord.User,
+        }
+
+        for parameter in params:
+            data.append(
+                [
+                    parameter["paramName"],
+                    parameter_types.get(parameter["paramType"]),
+                    parameter["required"],
+                ]
+            )
+
+        return data
+
+    async def parse_arguments(self, parameters: list, arguments: str, ctx: Context):
+
+        parsed_arguments = []
+
+        if parameters == []:  # No parameters created in command
+            return parsed_arguments
+
+        is_required_count = sum(params.count(True) for params in parameters)
+
+        if (is_required_count > 0 and arguments == None) or (
+            is_required_count > 0 and not len(arguments.split(" ")) >= is_required_count
+        ):
+            raise NoArgumentsPassed(
+                f"No arguments passed, or is missing a required argument. {is_required_count} parameters are required!"
+            )
+
+        if arguments:
+
+            args = []
+
+            i = 1
+            param_i = 0
+
+            last_index = 0
+
+            quoted_args = re.findall(
+                r"'(.*?)'", arguments
+            )  # find  all strings between single quotes
+
+            non_quoted_args = re.sub(
+                r"'(.*?)'", "", arguments
+            ).split()  # separate the non-quoted ones and split
+
+            _arguments = (
+                quoted_args + non_quoted_args
+            )  # I'm not sure if i'm doing this right but it works
+
+            for arg in _arguments:
+                args.append((arg, parameters[param_i][1]))
+                if i <= len(parameters):  # Last parameter, consume all
+                    start_index = arguments.index(arg, last_index) + len(arg)
+                    args.append((arguments[start_index:], parameters[param_i - 1][1]))
+                    break
+
+                i += 1
+                param_i += 1
+                last_index = arguments.index(arg, last_index) + len(arg)
+
+            for argument, argument_type in args:
+                if argument:
+                    for (
+                        parameter_name,
+                        parameter_type,
+                        _,
+                    ) in parameters:  # TODO: Refactor this code
+
+                        __argument = argument
+                        argument = argument.strip()
+
+                        if parameter_type == str and argument_type == str:
+                            parsed_arguments.append((parameter_name, __argument))
+
+                        elif parameter_type == int and argument_type == int:
+                            parsed_arguments.append((parameter_name, int(argument)))
+
+                        elif (
+                            parameter_type == discord.Member
+                            and argument_type == discord.Member
+                        ):
+                            member = await commands.MemberConverter().convert(
+                                ctx, argument
+                            )
+
+                            parsed_arguments.append((parameter_name, member))
+
+                        elif (
+                            parameter_type == discord.TextChannel
+                            and argument_type == discord.TextChannel
+                        ):
+
+                            print(argument)
+
+                            channel = await commands.TextChannelConverter().convert(
+                                ctx, argument
+                            )
+
+                            parsed_arguments.append((parameter_name, channel))
+
+                        elif (
+                            parameter_type == discord.Role
+                            and argument_type == discord.Role
+                        ):
+                            role = await commands.RoleConverter().convert(ctx, argument)
+
+                            parsed_arguments.append((parameter_name, role))
+
+                        elif parameter_type == discord.User:
+                            user = await commands.UserConverter().convert(ctx, argument)
+
+                            parsed_arguments.append((parameter_name, user))
+
+                        elif parameter_type == discord.Guild:
+                            guild = await commands.GuildConverter().convert(
+                                ctx, argument
+                            )
+
+                            parsed_arguments.append((parameter_name, guild))
+
+                else:
+                    parsed_arguments.append((parameter_name, NonePlaceholder()))
+
+            return parsed_arguments
 
     def get_actions(self, data, node_id):
 
@@ -108,7 +271,11 @@ class NodeToCode:
 
         return actions
 
-    async def create_callback(self, context: Context, command: dict):
+    async def create_callback(self, context: Context, command: dict, arguments: str):
+
+        arguments = await self.parse_arguments(
+            command["parameters"], arguments, ctx=context
+        )
 
         executions = []
 
@@ -120,9 +287,6 @@ class NodeToCode:
 
                 variable = action["data"].get("variables", [])
 
-                p(variables)
-                print(action["id"], variable)
-
                 if variable:
                     if not variables.get(variable[0], None):
                         raise ChannelNotFound(message=variable[0])
@@ -132,13 +296,15 @@ class NodeToCode:
 
                     action["data"]["channel"] = context.channel
 
-                say_action = Say(context=context, command_data=action["data"])
+                say_action = Say(
+                    context=context, command_data=action["data"], arguments=arguments
+                )
 
                 executions.append(say_action)
 
             elif action["type"] == "get_channel":
 
-                channel_action = GetChannel(context, action["data"]["text"])
+                channel_action = GetChannel(context, action["data"]["text"], arguments)
 
                 variables[action["id"]] = await channel_action.execute()
 
@@ -151,7 +317,9 @@ class NodeToCode:
                     isinstance(prev_result, discord.Message)
                     and not cmd.command_data["variables"]
                 ):
-                    prev_result = await cmd.execute(channel=prev_result.channel)
+                    prev_result = await cmd.execute(
+                        channel=prev_result.channel,
+                    )
 
                     continue
 
@@ -159,7 +327,9 @@ class NodeToCode:
                     isinstance(prev_result, discord.TextChannel)
                     and not cmd.command_data["variables"]
                 ):
-                    prev_result = await cmd.execute(channel=prev_result)
+                    prev_result = await cmd.execute(
+                        channel=prev_result,
+                    )
 
                     continue
 
