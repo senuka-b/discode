@@ -21,6 +21,9 @@ class NonePlaceholder:
     def __getattr__(self, attr_name):
         return "`undefined`"
 
+    def __str__(self) -> str:
+        return "`undefined`"
+
 
 class NodeToCode:
     def __init__(self) -> None:
@@ -28,6 +31,34 @@ class NodeToCode:
             "commands": {},
             "events": [],
         }
+
+        self.parameter_types = {
+            1: discord.Member,
+            2: discord.TextChannel,
+            3: str,
+            4: int,
+            5: discord.Role,
+            6: discord.Guild,
+            7: discord.User,
+        }
+
+        self.parameter_converters = {
+            value: lambda _key=key: (
+                lambda ctx, arg: self.convert_parameter(ctx, arg, _key)
+            )
+            for key, value in self.parameter_types.items()
+        }
+
+    async def convert_parameter(self, ctx, arg, key):
+
+        if key in [3, 4]:
+            return self.parameter_types.get(key)(arg)
+        else:
+            converter = getattr(
+                commands, f"{self.parameter_types.get(key).__name__}Converter"
+            )
+
+            return await converter().convert(ctx, arg)
 
     def parse(self, data):
         """
@@ -94,21 +125,11 @@ class NodeToCode:
     def parse_parameters(self, params: list):
         data = []
 
-        parameter_types = {
-            1: discord.Member,
-            2: discord.TextChannel,
-            3: str,
-            4: int,
-            5: discord.Role,
-            6: discord.Guild,
-            7: discord.User,
-        }
-
         for parameter in params:
             data.append(
                 [
                     parameter["paramName"],
-                    parameter_types.get(parameter["paramType"]),
+                    self.parameter_types.get(parameter["paramType"]),
                     parameter["required"],
                 ]
             )
@@ -135,9 +156,6 @@ class NodeToCode:
 
             args = []
 
-            i = 1
-            param_i = 0
-
             last_index = 0
 
             quoted_args = re.findall(
@@ -152,80 +170,60 @@ class NodeToCode:
                 quoted_args + non_quoted_args
             )  # I'm not sure if i'm doing this right but it works
 
-            for arg in _arguments:
-                args.append((arg, parameters[param_i][1]))
-                if i <= len(parameters):  # Last parameter, consume all
-                    start_index = arguments.index(arg, last_index) + len(arg)
-                    args.append((arguments[start_index:], parameters[param_i - 1][1]))
+            p(f"_arguments: {_arguments}")
+
+            i = 1
+
+            for param_i, arg in enumerate(_arguments):
+
+                if i == len(parameters):  # Last parameter, consume all
+
+                    start_index = arguments.index(arg, last_index)
+
+                    args.append((arguments[start_index:], parameters[param_i][1]))
                     break
 
                 i += 1
-                param_i += 1
+                args.append((arg, parameters[param_i][1]))
+
                 last_index = arguments.index(arg, last_index) + len(arg)
 
-            for argument, argument_type in args:
+            if len(args) != len(parameters) and not len(args) > len(parameters):
+                while len(args) != len(parameters):  # FIll in the missing arguments
+                    args.append(("", None))
+
+            p(f"args: {args}")
+            p(f"parameters: {parameters}")
+
+            for i, (argument, argument_type) in enumerate(args):
+
+                parameter_name = parameters[i][0]
+                parameter_type = parameters[i][1]
+
                 if argument:
-                    for (
-                        parameter_name,
-                        parameter_type,
-                        _,
-                    ) in parameters:  # TODO: Refactor this code
 
-                        __argument = argument
-                        argument = argument.strip()
+                    if argument_type == parameter_type:
 
-                        if parameter_type == str and argument_type == str:
-                            parsed_arguments.append((parameter_name, __argument))
+                        print(parameter_type, parameter_name)
 
-                        elif parameter_type == int and argument_type == int:
-                            parsed_arguments.append((parameter_name, int(argument)))
+                        if parameter_type == str:
+                            argument = argument
+                        else:
+                            argument = argument.strip()
 
-                        elif (
-                            parameter_type == discord.Member
-                            and argument_type == discord.Member
-                        ):
-                            member = await commands.MemberConverter().convert(
-                                ctx, argument
+                        parsed_arguments.append(
+                            (
+                                parameter_name,
+                                await self.parameter_converters.get(parameter_type)()(
+                                    ctx, argument
+                                ),
                             )
-
-                            parsed_arguments.append((parameter_name, member))
-
-                        elif (
-                            parameter_type == discord.TextChannel
-                            and argument_type == discord.TextChannel
-                        ):
-
-                            print(argument)
-
-                            channel = await commands.TextChannelConverter().convert(
-                                ctx, argument
-                            )
-
-                            parsed_arguments.append((parameter_name, channel))
-
-                        elif (
-                            parameter_type == discord.Role
-                            and argument_type == discord.Role
-                        ):
-                            role = await commands.RoleConverter().convert(ctx, argument)
-
-                            parsed_arguments.append((parameter_name, role))
-
-                        elif parameter_type == discord.User:
-                            user = await commands.UserConverter().convert(ctx, argument)
-
-                            parsed_arguments.append((parameter_name, user))
-
-                        elif parameter_type == discord.Guild:
-                            guild = await commands.GuildConverter().convert(
-                                ctx, argument
-                            )
-
-                            parsed_arguments.append((parameter_name, guild))
+                        )
 
                 else:
                     parsed_arguments.append((parameter_name, NonePlaceholder()))
 
+            p(parsed_arguments)
             return parsed_arguments
 
     def get_actions(self, data, node_id):
