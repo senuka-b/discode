@@ -4,17 +4,17 @@ import React from 'react';
 import { Button, Dialog, DialogActions, DialogContent,  DialogTitle,  TextField } from '@mui/material';
 import DiscodeAPI from '../../api/discode';
 
-// import DiscodeAPI from '../../api/api';
-// var ipcRenderer = require('electron').ipcRenderer;
+import { useNavigate } from 'react-router-dom';
+
 
 
 export default function CreateProjectDialog({open, handleClose}) {
 
     const api = new DiscodeAPI();
 
-    const inputFile = React.useRef(null);
+    const navigate = useNavigate()
 
-    const [location, setLocation] = React.useState('');
+    const [location, setLocation] = React.useState('No location selected');
     
 
   return (
@@ -42,13 +42,17 @@ export default function CreateProjectDialog({open, handleClose}) {
                   
                 }
 
+
+
                 
                 api.createNewProject(data).then((value) => {
                     console.log(value);
-                    if (value === "success") {
+                    if (value === "file_exists") {
+                        window.electron_.dialog.message(`A project with the name ${name} already exists in ${location}. Create ${name} in another location or, use another name!`);
 
                     } else {
-                        window.electron_.dialog.message(`A project with the name ${name} already exists in ${location}. Create ${name} in another location or, use another name!`);
+
+                        navigate("/project", {state: {path: location+"/"+name}})
                     }
                 });
                 

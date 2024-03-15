@@ -11,6 +11,7 @@ import {  CardActionArea,CardMedia,Grid, Typography } from '@mui/material';
 import banner from '../../assets/project_banner.png';
 import CreateProjectDialog from './dialog';
 import DiscodeAPI from '../../api/discode';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -20,7 +21,8 @@ const InitialScreen = () => {
     const [open, setOpen] = React.useState(false);
 
     const api = new DiscodeAPI();
-    console.log("abc", api.fetchRecentProjects())
+
+    const navigate = useNavigate();
     
 
     const handleClickOpen = () => {
@@ -90,7 +92,7 @@ const InitialScreen = () => {
                             window.electron_.ipcRenderer.once("selected-file", (location) => {
 
                                 console.log(location);
-        
+                                navigate("/project", {state: {path: location}});
                     
         
                             });
@@ -118,15 +120,15 @@ const InitialScreen = () => {
                     {recentProjects.length !== 0 ? recentProjects.map((project, index) => (
                             
                         <Grid item  >
-                            <Card sx={{ maxWidth: '22%', maxHeight: 200,}} >
-                            <CardActionArea >
+                            <Card sx={{ maxWidth: '22%', maxHeight: 200,}}  >
+                            <CardActionArea onClick={(_) => navigate("/project", {state: {path: project["path"]}})}>
 
                                 <CardMedia sx={{ height: 120,  }} image={banner} title="Test"  />
 
                                 <CardContent style={{backgroundColor: 'blueviolet'}}>
 
                                     <Typography gutterBottom variant="h6" component="div">
-                                        { project }
+                                        { project["name"] }
                                     </Typography>
                                     
                                 </CardContent>
@@ -139,7 +141,7 @@ const InitialScreen = () => {
                          //
                     )) : <Grid item  >
                     <Card sx={{ maxWidth: '22%', maxHeight: 200,}} >
-                    <CardActionArea >
+                    <CardActionArea onClick={handleClickOpen}>
 
 
                         <CardContent style={{backgroundColor: '#CD7C7C'}}>

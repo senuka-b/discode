@@ -61,7 +61,9 @@ async def create_project():
         if return_value == "file_exists":
             return return_value, 200
 
-        config.create_project(data["project_name"], data["path"])
+        config.create_project(
+            data["project_name"], data["path"] + "/" + data["project_name"]
+        )
 
         return return_value, 200
 
@@ -91,6 +93,26 @@ async def create_command():
         return "success", 200
 
         # await bot.create_event(parsed_commands_and_events['events']) TODO
+
+
+@app.route("/getProject", methods=["POST"])
+async def get_project():
+    if request.method == "POST":
+        data = request.get_json()
+
+        extension = ExtensionHandler(**data)
+
+        return extension.get_project()
+
+
+@app.route("/getExtension", methods=["POST"])
+async def get_extension():
+    if request.method == "POST":
+        data = request.get_json()
+
+        extension = ExtensionHandler(**data)
+
+        return extension.get_extension(data["name"])
 
 
 def run_api(bot_instance: commands.Bot):

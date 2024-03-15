@@ -1,16 +1,20 @@
 from pathlib import Path
-import json, os
+import json, os, re
 
 
 class ExtensionHandler:
     def __init__(self, **kwargs):
 
-        self.path = kwargs.get("path")
-        self.project_name = kwargs.get("project_name")
+        self.path: str = kwargs.get("path")
 
-        self.bot_token = kwargs.get("bot_token")
-        self.default_command_prefix = kwargs.get("default_command_prefix")
-        self.description = kwargs.get("description")
+        if self.path.endswith("discode"):
+            self.path = re.sub(r"[^\\]+\.discode$", "", self.path)
+
+        self.project_name = kwargs.get("project_name", None)
+
+        self.bot_token = kwargs.get("bot_token", None)
+        self.default_command_prefix = kwargs.get("default_command_prefix", None)
+        self.description = kwargs.get("description", None)
 
     def create_project(self):
 
@@ -46,7 +50,7 @@ class ExtensionHandler:
         )
         self.apply_starter_template("general")
 
-        return "success"
+        return self.path + f"/{self.project_name}.discode"
 
     def create_extension(
         self,
@@ -64,6 +68,29 @@ class ExtensionHandler:
             )
 
     def update_extension(self, name: str, node_data: dict): ...
+
+    def get_project(
+        self,
+    ):
+        data = {"extensions": []}
+
+        for ext in os.listdir(self.path + "/exts/"):
+            with open(self.path + "/exts/" + ext, "r") as f:
+
+                _data = json.load(f)
+
+                data["extensions"].append(_data["data"]["name"])
+
+        return data
+
+    def get_extension(self, name: str):
+        for ext in os.listdir(self.path + "/exts/"):
+            with open(f"{self.path}/exts/{ext.lower()}", "r") as f:
+                _data = json.load(f)
+                if _data["data"]["name"].lower() == name.lower():
+                    return _data["data"]["node_data"]
+
+        return None
 
     def apply_starter_template(self, template_name: str):
 
@@ -137,5 +164,7 @@ class ExtensionHandler:
                     "zoom": 1,
                 },
             }
+
+            f.seek(0)
 
             json.dump(data, f, indent=4)

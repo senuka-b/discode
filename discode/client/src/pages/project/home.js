@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import ReactFlow, { useNodesState, useEdgesState, addEdge, MiniMap, Controls, Background, Panel, ReactFlowProvider, MarkerType } from 'reactflow';
+import ReactFlow, { useNodesState, useEdgesState, addEdge, MiniMap, Controls, Background, Panel, ReactFlowProvider, MarkerType, useReactFlow } from 'reactflow';
 
 import { SnackbarProvider, useSnackbar } from 'notistack';
 
@@ -18,8 +18,10 @@ import { Add, HelpOutline, Refresh, Stop, Terminal } from '@mui/icons-material';
 import GetChannel from './nodes/get_channel';
 
 import io from "socket.io-client";
-const socket = io("http://localhost:5000")
+import { useLocation } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 
+const socket = io("http://localhost:5000")
 
 
 const nodeTypes = {
@@ -32,11 +34,6 @@ const edgeTypes = {
   then: Then
 }
 
-const _edges = [];
-
-const _nodes = [
-
-];
 
 var id = 0;
 
@@ -44,13 +41,47 @@ var id = 0;
 const api = new DiscodeAPI();
 
 
-const ProjectHome = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(_nodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(_edges);
+const ProjectHomeComponent = () => {
+
+  
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
+  const { setViewport } = useReactFlow();
   const [extensionValue, setextensionValue] = useState(0);
 
   const [extensions, setExtensions] = useState([]);
+
+  const {state} = useLocation();
+
+  useEffect(() => {
+    
+    console.log("Fetching project data")
+
+    api.getProject(state.path).then((value) => {
+      console.log("Fetched projetc data")
+
+      setExtensions(value["extensions"])
+
+
+
+      switch_extension(value["extensions"][0])
+      
+    })
+
+
+  }, [])
+  
+
+  const switch_extension = (extension_name) => {
+    api.getExtension(state.path, extension_name).then((value) => {
+        setNodes(value.nodes);
+
+        setEdges(value.edges);
+
+        setViewport(value.viewport);
+    })
+  }
 
 
   const { enqueueSnackbar } = useSnackbar();
@@ -180,7 +211,7 @@ const ProjectHome = () => {
 
 
       const newNode = {
-        id: type.toLowerCase().replace(" ", "_")+id++,
+        id: type.toLowerCase().replace(" ", "_")+uuidv4(),
         type: type.toLowerCase().replace(" ", "_"),
         position,
 
@@ -219,7 +250,6 @@ const ProjectHome = () => {
 
 
 
-    <ReactFlowProvider>
 
 
       <div  style={{
@@ -355,7 +385,6 @@ const ProjectHome = () => {
 
       </div>
 
-  </ReactFlowProvider>
 
 
 
@@ -364,4 +393,16 @@ const ProjectHome = () => {
   );
 };
 
+const ProjectHome = () => {
+  return ( 
+    <ReactFlowProvider>
+
+      <ProjectHomeComponent />
+
+    </ReactFlowProvider>
+
+
+   );
+}
+ 
 export default ProjectHome;

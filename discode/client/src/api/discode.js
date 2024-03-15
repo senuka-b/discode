@@ -69,6 +69,49 @@ class DiscodeAPI {
             })
         })})
     }
+
+    getProject (path) {
+        console.log("PATH", path)
+
+        return new Promise((resolve, reject) => {fetch(this.url+"/getProject", {
+            method: "POST",
+            body: JSON.stringify({ path : path}),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        
+
+        }).then((value) => {
+            console.log("value: ",value)
+
+
+            value.json().then((_data) => {
+                resolve(_data)
+            })
+        })
+    })
+    }
+
+    getExtension (path, name) {
+        return new Promise((resolve, reject) => {fetch(this.url+"/getExtension", {
+            method: "POST",
+            body: JSON.stringify({ path, name}),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        
+
+        }).then((value) => {
+            console.log(value)
+
+            value.json().then((_data) => {
+                
+
+                resolve(_data)
+            })
+        })
+    })
+    }
 }
 
 export default DiscodeAPI;

@@ -12,8 +12,8 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* <Route path="/" exact element={ <InitialScreen /> } />  */}
-        <Route path="/" exact element={ <ProjectHome /> } /> 
+        <Route path="/" exact element={ <InitialScreen /> } /> 
+        <Route path="/project" exact element={ <ProjectHome /> } /> 
       </Routes>
     </Router>
   );
