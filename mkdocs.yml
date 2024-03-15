@@ -1,0 +1,30 @@
+site_name: Discode Documentation
+site_url: https://yetimeh.github.io/discode
+repo_url: https://github.com/yetimeh/discode
+repo_name: yetimeh/discode
+
+theme:
+  name: "material"
+  palette:
+    scheme: slate
+    primary: teal
+    accent: purple
+
+  features:
+    - search.suggest
+    - search.highlight
+    - header.autohide
+    - navigation.tabs
+
+    - navigation.expand
+
+    - navigation.path
+    - toc.follow
+
+  
+
+plugins:
+  - search
+
+extra:
+  generator: false

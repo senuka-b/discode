@@ -53,6 +53,22 @@ class DiscodeAPI {
             })
         })})
     }
+
+    save (data) {
+        
+        return new Promise((resolve, reject) => {fetch(this.url+"/save" , {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then((value) => {
+            
+            value.text().then((_data) => {
+               resolve(_data);
+            })
+        })})
+    }
 }
 
 export default DiscodeAPI;

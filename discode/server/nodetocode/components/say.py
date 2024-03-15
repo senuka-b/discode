@@ -15,7 +15,7 @@ class Say(BaseCommand):
     async def execute(self, **kwargs):
 
         if self.arguments:
-            print("Yes")
+
             self.text = self.text.format(**dict(self.arguments))
 
         if kwargs.get("channel", None):

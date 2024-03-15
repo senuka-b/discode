@@ -1,6 +1,8 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import ReactFlow, { useNodesState, useEdgesState, addEdge, MiniMap, Controls, Background, Panel, ReactFlowProvider, MarkerType } from 'reactflow';
 
+import { SnackbarProvider, useSnackbar } from 'notistack';
+
 import 'reactflow/dist/base.css';
 
 
@@ -11,12 +13,13 @@ import SayNode from './nodes/say';
 import Sidebar from './sidebar/sidebar';
 
 import Then from './nodes/edges/then';
-import { Button } from '@mui/material';
-import { HelpOutline, Refresh, Stop, Terminal } from '@mui/icons-material';
+import { Box, Button, IconButton, Stack, Tab, Tabs } from '@mui/material';
+import { Add, HelpOutline, Refresh, Stop, Terminal } from '@mui/icons-material';
 import GetChannel from './nodes/get_channel';
 
 import io from "socket.io-client";
 const socket = io("http://localhost:5000")
+
 
 
 const nodeTypes = {
@@ -45,11 +48,20 @@ const ProjectHome = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(_nodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(_edges);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
+  const [extensionValue, setextensionValue] = useState(0);
+
+  const [extensions, setExtensions] = useState([]);
+
+
+  const { enqueueSnackbar } = useSnackbar();
 
 
   useEffect(() => {
     socket.on('error', ({ message }) => {
-      console.log(message);
+
+      console.log("ERROR:", message);
+
+      enqueueSnackbar(message,  {variant: "error", anchorOrigin: {horizontal: "right", vertical: "bottom"}} );
     });
 
     return () => {
@@ -185,12 +197,22 @@ const ProjectHome = () => {
 
 
     const reloadBot = (event) => {
-      var data = reactFlowInstance.toObject();
+      let data = reactFlowInstance.toObject();
+
 
       console.log(data)
 
       api.createNewCommand(data)
+
+      enqueueSnackbar("Bot reloaded successfully", {variant: "success", autoHideDuration: 2000, anchorOrigin: {horizontal: "center", vertical: "bottom"}})
     }
+
+    const handleAutoSave = (event) => {
+      let data = reactFlowInstance.toObject();
+
+      // api.save(data)
+    }
+
 
 
   return (
@@ -219,11 +241,78 @@ const ProjectHome = () => {
         onDrop={onDrop}
         onDragOver={onDragOver}
         onInit={setReactFlowInstance}
+        onChange={handleAutoSave}
 
 
 
 
       >
+        <Panel position='top-center'>
+
+
+          <Box sx={{ maxWidth: { xs: 320, sm: 600 }}}>
+
+            <Stack direction='row-reverse'>
+              <IconButton sx={{color: 'pink'}}><Add /></IconButton>
+
+
+
+              <Tabs
+                variant="scrollable"
+                value={extensionValue}
+                onChange={(e, value) => setextensionValue(value)}
+                classes={{
+      
+                  flexContainer: "flexContainer",
+                  indicator: "indicator"
+                }}
+    
+                scrollButtons
+
+                TabIndicatorProps={{style: {background: "transparent", justifyContent: 'center'}, children: <span />}}
+
+                
+                sx={{
+                  
+                
+                  "& .MuiTab-root.Mui-selected": {
+                    color: 'blue'
+                  },
+
+                  "& .indicator": {
+                    display: "flex",
+                    justifyContent: "center",
+                    backgroundColor: "transparent",
+                    "& > span": {
+                      maxWidth: 40,
+                      width: "100%",
+                      backgroundColor: "cyan"
+                    }
+                  }
+
+  
+                }}
+
+        
+              >
+          
+                <Tab label="General" sx={{color: 'rgba(255, 255, 255, 0.7)', textTransform: 'none', fontSize: 16}} />
+        
+                
+          
+          
+
+            
+                
+            </Tabs>
+
+          </Stack>
+
+          </Box>
+
+     
+        </Panel>
+
         <Panel position='top-left' >
 
           <Sidebar />

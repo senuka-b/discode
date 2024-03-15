@@ -93,7 +93,7 @@ class DiscodeBot(commands.Bot):
     def uptime(self) -> datetime.timedelta:
         return datetime.datetime.utcnow() - self._uptime
 
-    async def create_command(self, trigger_error, _command: dict):
+    async def create_command(self, messenger, _command: dict):
 
         p(_command)
 
@@ -108,11 +108,11 @@ class DiscodeBot(commands.Bot):
                 )
 
             except ChannelNotFound as e:
-                trigger_error(e.message)
+                messenger.error(message=e.message)
                 return
 
             except NoArgumentsPassed as e:
-                trigger_error(e.message)
+                messenger.error(message=e.message)
                 return
 
             await callback()
@@ -124,3 +124,11 @@ class DiscodeBot(commands.Bot):
         except commands.CommandRegistrationError as e:
             self.remove_command(e.name)
             self.add_command(custom_command)
+
+    def validate_commands_and_events(
+        self,
+    ):
+
+        self.recursively_remove_all_commands()
+
+        deleted_events = {}  # TODO remove events

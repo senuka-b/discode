@@ -6,7 +6,6 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import {  CardActionArea,CardMedia,Grid, Typography } from '@mui/material';
 
-import MultipleSelect from '../test';
 
 
 import banner from '../../assets/project_banner.png';
@@ -98,7 +97,7 @@ const InitialScreen = () => {
 
                         }} >Open exisiting project</Button>
 
-                        <MultipleSelect />
+                        
 
 
                     </div>

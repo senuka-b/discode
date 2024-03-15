@@ -27,10 +27,6 @@ class NonePlaceholder:
 
 class NodeToCode:
     def __init__(self) -> None:
-        self.data = {
-            "commands": {},
-            "events": [],
-        }
 
         self.parameter_types = {
             1: discord.Member,
@@ -93,18 +89,17 @@ class NodeToCode:
         }
         """
 
+        self.data = {
+            "commands": {},
+            "events": [],
+        }
+
         for node in data["nodes"]:
             if node["type"] == "command":  # Found a command
 
                 # logging.info(
                 #     f"Found command {node['id']} - {node['data']['command_name']}"
                 # )
-
-                p(
-                    self.parse_parameters(node["data"]["parameters"])
-                    if node["data"]["parameters"]
-                    else None
-                )
 
                 self.data["commands"][node["id"]] = {
                     "name": node["data"]["command_name"],
@@ -119,6 +114,8 @@ class NodeToCode:
 
             elif node["type"] == "event":  # Found an event
                 ...  # TODO: Implement event support
+
+        p(self.data)
 
         return self.data
 
@@ -140,7 +137,9 @@ class NodeToCode:
 
         parsed_arguments = []
 
-        if parameters == []:  # No parameters created in command
+        if not parameters:  # No parameters created in command
+
+            print("No params")
             return parsed_arguments
 
         is_required_count = sum(params.count(True) for params in parameters)
@@ -223,8 +222,12 @@ class NodeToCode:
                 else:
                     parsed_arguments.append((parameter_name, NonePlaceholder()))
 
-            p(parsed_arguments)
-            return parsed_arguments
+        else:
+            parsed_arguments = list(
+                map(lambda param: (param[0], NonePlaceholder()), parameters)
+            )
+
+        return parsed_arguments
 
     def get_actions(self, data, node_id):
 
@@ -264,7 +267,11 @@ class NodeToCode:
         for node in data["nodes"]:
             if node["id"] == target_id:
                 actions.append(
-                    {"id": node["id"], "type": node["type"], "data": node["data"]}
+                    {
+                        "id": node["id"],
+                        "type": node["type"],
+                        "data": node["data"],
+                    }
                 )
 
         return actions
@@ -274,6 +281,12 @@ class NodeToCode:
         arguments = await self.parse_arguments(
             command["parameters"], arguments, ctx=context
         )
+
+        if not arguments:
+            arguments = [("context", context)]
+        else:
+
+            arguments = arguments + [("context", context)]
 
         executions = []
 
@@ -295,7 +308,9 @@ class NodeToCode:
                     action["data"]["channel"] = context.channel
 
                 say_action = Say(
-                    context=context, command_data=action["data"], arguments=arguments
+                    context=context,
+                    command_data=action["data"],
+                    arguments=arguments,
                 )
 
                 executions.append(say_action)
@@ -310,6 +325,7 @@ class NodeToCode:
             prev_result = None
 
             for cmd in executions:  # MY attempt to chain the resultants of each action
+                # TODO: Fix different tree resultants bug
 
                 if (
                     isinstance(prev_result, discord.Message)
@@ -321,7 +337,7 @@ class NodeToCode:
 
                     continue
 
-                if (
+                elif (
                     isinstance(prev_result, discord.TextChannel)
                     and not cmd.command_data["variables"]
                 ):
