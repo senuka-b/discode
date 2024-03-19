@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import ReactFlow, { useNodesState, useEdgesState, addEdge, MiniMap, Controls, Background, Panel, ReactFlowProvider, MarkerType, useReactFlow } from 'reactflow';
 
-import { SnackbarProvider, useSnackbar } from 'notistack';
+import { useSnackbar } from 'notistack';
 
 import 'reactflow/dist/base.css';
 
@@ -20,6 +20,10 @@ import GetChannel from './nodes/get_channel';
 import io from "socket.io-client";
 import { useLocation } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import CreateEXtension from './dialogs/create_extension';
+import CreateExtension from './dialogs/create_extension';
+
+
 
 const socket = io("http://localhost:5000")
 
@@ -50,13 +54,18 @@ const ProjectHomeComponent = () => {
   const { setViewport } = useReactFlow();
   const [extensionValue, setextensionValue] = useState(0);
 
+  const [dialogCreatExtensionOpen, setDialogCreateExtensionOpen] = useState(false);
+
   const [extensions, setExtensions] = useState([]);
 
   const {state} = useLocation();
 
+  var path = state.path;
+
   useEffect(() => {
     
     console.log("Fetching project data")
+
 
     api.getProject(state.path).then((value) => {
       console.log("Fetched projetc data")
@@ -227,23 +236,57 @@ const ProjectHomeComponent = () => {
   );
 
 
-    const reloadBot = (event) => {
-      let data = reactFlowInstance.toObject();
+  const reloadBot = (event) => {
+    let data = reactFlowInstance.toObject();
 
 
-      console.log(data)
+    console.log(data)
 
-      api.createNewCommand(data)
+    api.createNewCommand(data);
 
-      enqueueSnackbar("Bot reloaded successfully", {variant: "success", autoHideDuration: 2000, anchorOrigin: {horizontal: "center", vertical: "bottom"}})
+    enqueueSnackbar("Bot reloaded successfully", {variant: "success", autoHideDuration: 2000, anchorOrigin: {horizontal: "center", vertical: "bottom"}})
+  }
+
+  const handleAutoSave = (event) => {
+    let data = reactFlowInstance.toObject();
+
+    // api.save(data)
+  }
+
+  const handleExtensionClick = (event, extension) => {
+    switch_extension(extension);
+
+  }
+
+  const handleExtensionRename = (extension) => {
+    console.log("RENAME EXTENSION ",extension)
+  }
+
+  const handleCreateNewExtension = () => {
+    setDialogCreateExtensionOpen(true);
+  }
+
+  const handleDialogCreateExtension = (_,  value)  => {
+    setDialogCreateExtensionOpen(!dialogCreatExtensionOpen);
+
+    if (value) {
+      
+
+      setExtensions((prevExtensions) => {
+        return [...prevExtensions,  value["extension"]];
+      });
+  
+      
+  
+  
+      switch_extension(value["extension"]);
     }
 
-    const handleAutoSave = (event) => {
-      let data = reactFlowInstance.toObject();
 
-      // api.save(data)
-    }
+   
 
+  }
+    
 
 
   return (
@@ -283,11 +326,12 @@ const ProjectHomeComponent = () => {
           <Box sx={{ maxWidth: { xs: 320, sm: 600 }}}>
 
             <Stack direction='row-reverse'>
-              <IconButton sx={{color: 'pink'}}><Add /></IconButton>
+              <IconButton sx={{color: 'pink'}} onClick={handleCreateNewExtension}><Add /></IconButton>
 
 
 
               <Tabs
+              
                 variant="scrollable"
                 value={extensionValue}
                 onChange={(e, value) => setextensionValue(value)}
@@ -326,14 +370,12 @@ const ProjectHomeComponent = () => {
         
               >
           
-                <Tab label="General" sx={{color: 'rgba(255, 255, 255, 0.7)', textTransform: 'none', fontSize: 16}} />
-        
-                
-          
-          
+                {extensions.length !== 0 ? extensions.map((value, index) => (
+                  <Tab label={value} onClick={(event) => handleExtensionClick(event, value)} onContextMenu={() => handleExtensionRename(value)}  sx={{color: 'rgba(255, 255, 255, 0.7)', textTransform: 'none', fontSize: 16}} />
 
-            
-                
+                )) : <Tab label="You don't have any extensions created"/>}
+
+
             </Tabs>
 
           </Stack>
@@ -383,6 +425,8 @@ const ProjectHomeComponent = () => {
 
       </ReactFlow>
 
+      <CreateExtension path={path} dialogOpen={dialogCreatExtensionOpen} handleDialogClose={handleDialogCreateExtension} />
+
       </div>
 
 
@@ -398,6 +442,7 @@ const ProjectHome = () => {
     <ReactFlowProvider>
 
       <ProjectHomeComponent />
+      
 
     </ReactFlowProvider>
 

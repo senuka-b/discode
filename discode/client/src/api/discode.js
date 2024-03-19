@@ -5,7 +5,7 @@ class DiscodeAPI {
 
     createNewProject (data) {
        
-        return new Promise((resolve, reject) => {fetch(this.url+"/createProject" , {
+        return new Promise((resolve, reject) => {fetch(this.url+"/projects/create" , {
             method: "POST",
             body: JSON.stringify(data),
             headers: {
@@ -21,7 +21,7 @@ class DiscodeAPI {
     }
 
     async fetchRecentProjects() {
-        const response = await fetch(this.url+"/recentProjects", {
+        const response = await fetch(this.url+"/projects/recent", {
             method: "GET"
         })
 
@@ -73,7 +73,7 @@ class DiscodeAPI {
     getProject (path) {
         console.log("PATH", path)
 
-        return new Promise((resolve, reject) => {fetch(this.url+"/getProject", {
+        return new Promise((resolve, reject) => {fetch(this.url+"/projects/get", {
             method: "POST",
             body: JSON.stringify({ path : path}),
             headers: {
@@ -93,7 +93,7 @@ class DiscodeAPI {
     }
 
     getExtension (path, name) {
-        return new Promise((resolve, reject) => {fetch(this.url+"/getExtension", {
+        return new Promise((resolve, reject) => {fetch(this.url+"/extensions/get", {
             method: "POST",
             body: JSON.stringify({ path, name}),
             headers: {
@@ -112,6 +112,30 @@ class DiscodeAPI {
         })
     })
     }
+
+    createExtension (data) {
+        return new Promise((resolve, reject) => {fetch(this.url+"/extensions/create", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        
+
+        }).then((value) => {
+            console.log(value)
+
+            value.json().then((_data) => {
+                
+
+                resolve(_data)
+            })
+        })
+    })
+    }
+
+
+    
 }
 
 export default DiscodeAPI;

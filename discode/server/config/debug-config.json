@@ -1,4 +1,13 @@
 {
     "settings": {},
-    "recent_projects": []
+    "recent_projects": [
+        {
+            "name": "Test 1",
+            "path": "C:\\Users\\senuk\\Documents\\Discode Projects/Test 1"
+        },
+        {
+            "name": "Test discode",
+            "path": "C:\\Users\\senuk\\Documents\\Discode Projects/Test discode"
+        }
+    ]
 }

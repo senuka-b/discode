@@ -58,14 +58,15 @@ class ExtensionHandler:
         description: str = "",
     ):
 
-        with open(
-            self.path + f"/{self.project_name}/exts/{name.lower()}.ext.discode", "w"
-        ) as f:
+        with open(self.path + f"/exts/{name.lower()}.ext.discode", "w") as f:
             json.dump(
                 {"data": {"name": name, "description": description, "node_data": {}}},
                 f,
                 indent=4,
             )
+
+        self.apply_starter_template(name)
+        return {"data": "success", "extension": name}
 
     def update_extension(self, name: str, node_data: dict): ...
 
@@ -74,8 +75,10 @@ class ExtensionHandler:
     ):
         data = {"extensions": []}
 
-        for ext in os.listdir(self.path + "/exts/"):
-            with open(self.path + "/exts/" + ext, "r") as f:
+        paths = sorted(Path(self.path+"/exts/").iterdir(), key=os.path.getmtime)
+
+        for ext in paths:
+            with ext.open("r") as f:
 
                 _data = json.load(f)
 
@@ -84,19 +87,22 @@ class ExtensionHandler:
         return data
 
     def get_extension(self, name: str):
-        for ext in os.listdir(self.path + "/exts/"):
-            with open(f"{self.path}/exts/{ext.lower()}", "r") as f:
+        paths = sorted(Path(self.path+"/exts/").iterdir(), key=os.path.getmtime)
+        
+        
+        for ext in paths:
+            with ext.open("r") as f:
                 _data = json.load(f)
                 if _data["data"]["name"].lower() == name.lower():
                     return _data["data"]["node_data"]
 
-        return None
+        return []
 
     def apply_starter_template(self, template_name: str):
 
         with open(
             self.path
-            + f"/{self.project_name}/exts/{template_name.lower()}.ext.discode",
+            + f"/{self.project_name or ""}/exts/{template_name.lower()}.ext.discode",
             "r+",
         ) as f:
             data = json.load(f)

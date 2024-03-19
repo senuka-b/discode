@@ -43,12 +43,12 @@ async def home():
     return "App is working!"
 
 
-@app.route("/recentProjects")
+@app.route("/projects/recent")
 async def recent_projects():
     return config.fetch_projects()
 
 
-@app.route("/createProject", methods=["POST"])
+@app.route("/projects/create", methods=["POST"])
 async def create_project():
     if request.method == "POST":
 
@@ -95,7 +95,7 @@ async def create_command():
         # await bot.create_event(parsed_commands_and_events['events']) TODO
 
 
-@app.route("/getProject", methods=["POST"])
+@app.route("/projects/get", methods=["POST"])
 async def get_project():
     if request.method == "POST":
         data = request.get_json()
@@ -105,7 +105,7 @@ async def get_project():
         return extension.get_project()
 
 
-@app.route("/getExtension", methods=["POST"])
+@app.route("/extensions/get", methods=["POST"])
 async def get_extension():
     if request.method == "POST":
         data = request.get_json()
@@ -113,6 +113,18 @@ async def get_extension():
         extension = ExtensionHandler(**data)
 
         return extension.get_extension(data["name"])
+
+
+@app.route("/extensions/create", methods=["POST"])
+async def create_extension():
+    if request.method == "POST":
+        data = request.get_json()
+
+        print(":DAta", data)
+
+        extension = ExtensionHandler(**data)
+
+        return extension.create_extension(data["name"], data["description"])
 
 
 def run_api(bot_instance: commands.Bot):
