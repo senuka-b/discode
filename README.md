@@ -19,6 +19,10 @@ Something like this:
 
 https://github.com/yetimeh/discode/assets/111502106/5d4d9f14-d2d3-4f30-b9bf-803be96a44e6
 
+Concept Video:
+
+Check it out on YouTube -> https://youtu.be/H8Y8U3d_Mk4?si=BSsmyLlX0VemFCaw
+
 
 
 ## Features
