@@ -20,8 +20,8 @@ import GetChannel from './nodes/get_channel';
 import io from "socket.io-client";
 import { useLocation } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import CreateEXtension from './dialogs/create_extension';
 import CreateExtension from './dialogs/create_extension';
+import RenameExtension from './dialogs/rename_extension';
 
 
 
@@ -53,8 +53,11 @@ const ProjectHomeComponent = () => {
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const { setViewport } = useReactFlow();
   const [extensionValue, setextensionValue] = useState(0);
+  const [rerenderKey, setRerenderKey] = useState(Date.now());
 
   const [dialogCreatExtensionOpen, setDialogCreateExtensionOpen] = useState(false);
+  const [dialogRenameExtensionOpen, setDialogRenameExtensionOpen] = useState(false);
+  const [rightClickedExtension, setrightClickedExtension] = useState('')
 
   const [extensions, setExtensions] = useState([]);
 
@@ -84,11 +87,28 @@ const ProjectHomeComponent = () => {
 
   const switch_extension = (extension_name) => {
     api.getExtension(state.path, extension_name).then((value) => {
+
+
         setNodes(value.nodes);
 
         setEdges(value.edges);
 
-        setViewport(value.viewport);
+        
+
+
+
+        setTimeout(() => {
+          if (reactFlowInstance) {
+
+            console.log("yip")
+            reactFlowInstance.fitView({padding: 0.2});
+
+          } else {
+          }
+        }, 1);
+
+       
+        // setViewport(value.viewport,);
     })
   }
 
@@ -250,7 +270,12 @@ const ProjectHomeComponent = () => {
   const handleAutoSave = (event) => {
     let data = reactFlowInstance.toObject();
 
-    // api.save(data)
+    socket.emit("auto-save", {
+      path,
+      name: extensions[extensionValue],
+      node_data: data
+    })
+
   }
 
   const handleExtensionClick = (event, extension) => {
@@ -258,8 +283,30 @@ const ProjectHomeComponent = () => {
 
   }
 
+
   const handleExtensionRename = (extension) => {
-    console.log("RENAME EXTENSION ",extension)
+    setrightClickedExtension(extension);
+    setDialogRenameExtensionOpen(true);
+
+  }
+
+  const handleDialogRenameExtension = (extension, renamed_extension, is_deleted) => {
+    setDialogRenameExtensionOpen(false);
+
+    if (is_deleted === true) {
+      setExtensions((prevExtensions) => prevExtensions.filter(e => e !== extension));
+
+      return
+    }
+
+    else if (extension && renamed_extension) {
+      setExtensions((prevExtensions) => {
+        return prevExtensions.map((e) => e === extension ? renamed_extension : e)
+
+      })
+    }
+
+
   }
 
   const handleCreateNewExtension = () => {
@@ -276,10 +323,14 @@ const ProjectHomeComponent = () => {
         return [...prevExtensions,  value["extension"]];
       });
   
-      
-  
   
       switch_extension(value["extension"]);
+      setextensionValue(extensions.length);
+
+
+      setTimeout(() => {
+        reactFlowInstance.fitView();
+      }, 1);
     }
 
 
@@ -302,19 +353,44 @@ const ProjectHomeComponent = () => {
 
       }}>
       <ReactFlow
+    
 
         nodes={nodes}
         edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        onNodesDelete={onNodeDelete}
+        onNodesChange={(nodeChange) => {
+          onNodesChange(nodeChange)
+          handleAutoSave();
+
+        }}
+        onEdgesChange={(edgeChange) => {
+          onEdgesChange(edgeChange);
+          handleAutoSave();
+
+        }}
+        onConnect={(on_connect) => {
+          onConnect(on_connect);
+          handleAutoSave();
+        }}
+        onNodesDelete={(nodeDelete) => {
+          onNodeDelete(nodeDelete);
+          handleAutoSave();
+
+        }}
+        
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         onDrop={onDrop}
         onDragOver={onDragOver}
         onInit={setReactFlowInstance}
         onChange={handleAutoSave}
+        onLoad={() => {
+          
+            reactFlowInstance.fitView({padding: 0.2});
+          
+  
+        }}
+        
+        
 
 
 
@@ -373,7 +449,7 @@ const ProjectHomeComponent = () => {
                 {extensions.length !== 0 ? extensions.map((value, index) => (
                   <Tab label={value} onClick={(event) => handleExtensionClick(event, value)} onContextMenu={() => handleExtensionRename(value)}  sx={{color: 'rgba(255, 255, 255, 0.7)', textTransform: 'none', fontSize: 16}} />
 
-                )) : <Tab label="You don't have any extensions created"/>}
+                )) : <Tab label="You don't have any extensions created" sx={{color: 'rgb(234, 125, 125)', textTransform: 'none', fontSize: 15}}/>}
 
 
             </Tabs>
@@ -408,7 +484,9 @@ const ProjectHomeComponent = () => {
 
             <div className='mb-5'>
 
-              <Button size="small" variant='contained' color='secondary' onClick={reloadBot} startIcon={< Terminal />} >Open console</Button>
+              <Button size="small" variant='contained' color='secondary' onClick={() => {
+                console.log(nodes)
+              }} startIcon={< Terminal />} >Open console</Button>
 
             </div>
 
@@ -427,6 +505,8 @@ const ProjectHomeComponent = () => {
 
       <CreateExtension path={path} dialogOpen={dialogCreatExtensionOpen} handleDialogClose={handleDialogCreateExtension} />
 
+      <RenameExtension extension={rightClickedExtension} path={path}  dialogOpen={dialogRenameExtensionOpen} handleDialogClose={handleDialogRenameExtension} />
+
       </div>
 
 
@@ -439,7 +519,7 @@ const ProjectHomeComponent = () => {
 
 const ProjectHome = () => {
   return ( 
-    <ReactFlowProvider>
+    <ReactFlowProvider >
 
       <ProjectHomeComponent />
       

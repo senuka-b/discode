@@ -35,6 +35,7 @@ COMPONENTS = {
     "Action components": ["Say", "Kick user", "Ban user"],
     "Variable components": ["Get server", "Get user", "Get role", "Get channel"],
     "Check components": ["Permissions check", "Role check", "User check"],
+    "Logical components": ["If-then-else", "Loop"],
 }
 
 
@@ -120,11 +121,37 @@ async def create_extension():
     if request.method == "POST":
         data = request.get_json()
 
-        print(":DAta", data)
-
         extension = ExtensionHandler(**data)
 
         return extension.create_extension(data["name"], data["description"])
+
+
+@app.route("/extensions/rename", methods=["PATCH"])
+async def rename_extension():
+    if request.method == "PATCH":
+        data = request.get_json()
+
+        extension = ExtensionHandler(**data)
+
+        return extension.rename_extension(data["name"], data["rename"])
+
+
+@app.route("/extensions/delete", methods=["DELETE"])
+async def delete_extension():
+    if request.method == "DELETE":
+        data = request.get_json()
+
+        extension = ExtensionHandler(**data)
+
+        return extension.delete_extension(data["name"])
+
+
+@socket.on("auto-save")
+def update_extension(data):
+
+    extension = ExtensionHandler(**data)
+
+    return extension.update_extension(data["name"], data["node_data"])
 
 
 def run_api(bot_instance: commands.Bot):

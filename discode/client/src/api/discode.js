@@ -54,10 +54,26 @@ class DiscodeAPI {
         })})
     }
 
-    save (data) {
+    renameExtension (data) {
         
-        return new Promise((resolve, reject) => {fetch(this.url+"/save" , {
-            method: "POST",
+        return new Promise((resolve, reject) => {fetch(this.url+"/extensions/rename" , {
+            method: "PATCH",
+            body: JSON.stringify(data),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then((value) => {
+            
+            value.text().then((_data) => {
+               resolve(_data);
+            })
+        })})
+    }
+
+    deleteExtension (data) {
+        
+        return new Promise((resolve, reject) => {fetch(this.url+"/extensions/delete" , {
+            method: "DELETE",
             body: JSON.stringify(data),
             headers: {
                 "Content-Type": "application/json"

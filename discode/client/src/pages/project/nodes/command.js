@@ -102,7 +102,15 @@ function CommandNode({ data }) {
  const [description, setDescription] = useState(data['description'])
 
 
-  
+
+
+ if (data.command_name !== command_name) {
+     setCommand_name(data.command_name);
+   }
+   
+ if (data.description !== description) {
+    setDescription(data.description);
+ }
 
   const handleCreateParameter = (event) => {
 

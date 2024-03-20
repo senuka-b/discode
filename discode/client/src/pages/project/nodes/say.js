@@ -8,6 +8,10 @@ const SayNode = ({data, selected}) => {
 
     const [text, setText] = useState(data['text'])
 
+
+    if (data.text !== text) {
+        setText(data.text);
+      }
   
     return ( 
 

@@ -68,24 +68,24 @@ class ExtensionHandler:
         self.apply_starter_template(name)
         return {"data": "success", "extension": name}
 
-    def update_extension(self, name: str, node_data: dict): ...
-
-    def get_project(
-        self,
-    ):
-        data = {"extensions": []}
-
+    def update_extension(self, name: str, node_data: dict): 
         paths = sorted(Path(self.path+"/exts/").iterdir(), key=os.path.getmtime)
-
+        
+        
         for ext in paths:
-            with ext.open("r") as f:
-
+            with ext.open("r") as f: # Because r+ doesn't work that fast
+                
+                
                 _data = json.load(f)
+                
+                if _data["data"]["name"].lower() == name.lower():
+                    _data["data"]["node_data"] = node_data
+                    
+                    with ext.open("w") as fw:
 
-                data["extensions"].append(_data["data"]["name"])
-
-        return data
-
+                        json.dump(_data, fw, indent=4)
+                    return "ok", 200
+        
     def get_extension(self, name: str):
         paths = sorted(Path(self.path+"/exts/").iterdir(), key=os.path.getmtime)
         
@@ -97,7 +97,50 @@ class ExtensionHandler:
                     return _data["data"]["node_data"]
 
         return []
+    
+    def rename_extension(self, name: str, rename: str):
+        paths = sorted(Path(self.path+"/exts/").iterdir(), key=os.path.getmtime)
+        
+        for ext in paths:
+            with ext.open("r") as f:
+                _data = json.load(f)
+                if _data["data"]["name"].lower() == name.lower():
+                    _data["data"]["name"] = rename
+                    
+                    with ext.open("w") as fw:
+                    
+                        json.dump(_data, fw, indent=4)
+                    
+                    
+                    return "ok", 200
 
+    def delete_extension(self, name: str):
+        paths = sorted(Path(self.path+"/exts/").iterdir(), key=os.path.getmtime)
+        
+        for ext in paths:
+            with ext.open("r") as f:
+                _data = json.load(f)
+                if _data["data"]["name"].lower() == name.lower():
+                    f.close()
+                    os.remove(ext.as_posix())
+
+    def get_project(
+        self,
+    ):
+        data = {"extensions": []}
+
+        paths = sorted(Path(self.path+"/exts/").iterdir(), key=os.path.getctime)
+
+        for ext in paths:
+            with ext.open("r") as f:
+
+                _data = json.load(f)
+
+                data["extensions"].append(_data["data"]["name"])
+
+        return data
+
+   
     def apply_starter_template(self, template_name: str):
 
         with open(
