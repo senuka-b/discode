@@ -75,15 +75,18 @@ async def get_components():
     return COMPONENTS
 
 
-@app.route("/commands/create", methods=["POST"])
-async def create_command():
+@app.route("/commands/reload/<path:file_path>", methods=["GET"])
+async def create_command(file_path):
 
-    if request.method == "POST":
-        data = request.get_json()
+    extension = ExtensionHandler(path=file_path)
+
+    extensions = extension.get_extension_data()
+
+    bot.validate_commands_and_events()
+
+    for data in extensions:
 
         parsed_commands_and_events = node_to_code.parse(data)
-
-        bot.validate_commands_and_events()
 
         for command in parsed_commands_and_events["commands"]:
 
@@ -91,9 +94,9 @@ async def create_command():
                 messenger, parsed_commands_and_events["commands"][command]
             )
 
-        return "success", 200
+    return "success", 200
 
-        # await bot.create_event(parsed_commands_and_events['events']) TODO
+    # await bot.create_event(parsed_commands_and_events['events']) TODO
 
 
 @app.route("/projects/get", methods=["POST"])

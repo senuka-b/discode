@@ -39,7 +39,6 @@ const edgeTypes = {
 }
 
 
-var id = 0;
 
 
 const api = new DiscodeAPI();
@@ -53,7 +52,7 @@ const ProjectHomeComponent = () => {
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const { setViewport } = useReactFlow();
   const [extensionValue, setextensionValue] = useState(0);
-  const [rerenderKey, setRerenderKey] = useState(Date.now());
+
 
   const [dialogCreatExtensionOpen, setDialogCreateExtensionOpen] = useState(false);
   const [dialogRenameExtensionOpen, setDialogRenameExtensionOpen] = useState(false);
@@ -257,12 +256,9 @@ const ProjectHomeComponent = () => {
 
 
   const reloadBot = (event) => {
-    let data = reactFlowInstance.toObject();
+   
 
-
-    console.log(data)
-
-    api.createNewCommand(data);
+    api.reloadCommands(path);
 
     enqueueSnackbar("Bot reloaded successfully", {variant: "success", autoHideDuration: 2000, anchorOrigin: {horizontal: "center", vertical: "bottom"}})
   }

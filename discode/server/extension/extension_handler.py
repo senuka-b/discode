@@ -98,6 +98,22 @@ class ExtensionHandler:
 
         return []
     
+    def get_extension_data(self):
+        paths = Path(self.path+"/exts/").iterdir()
+         
+        data = []
+         
+        for ext in paths:
+            with ext.open("r") as f:
+                _data = json.load(f)
+                
+                data.append(_data["data"]["node_data"])
+                
+                f.close()
+                
+        return data
+        
+    
     def rename_extension(self, name: str, rename: str):
         paths = sorted(Path(self.path+"/exts/").iterdir(), key=os.path.getmtime)
         
