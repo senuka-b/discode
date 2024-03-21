@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, dialog, } = require('electron')
 
 const path = require('path')
 const fs = require('fs');
+
 // const isDev = require('electron-is-dev')
 
 require('@electron/remote/main').initialize()
@@ -9,22 +10,27 @@ require('@electron/remote/main').initialize()
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
+    icon: path.join(__dirname, 'preload.js'),
     width: 800,
     height: 600,
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
+
       preload: path.join(__dirname, 'preload.js')
     }
   })
 
-  win.loadURL("http://localhost:3000");
+  // win.loadURL("http://localhost:3000");
 
-//   win.loadURL(
-//     isDev
-//       ? 'http://localhost:3000'
-//       : `file://${path.join(__dirname, '../build/index.html')}`
-//   )
+  var isDev = false;
+
+
+  win.loadURL(
+    isDev
+      ? 'http://localhost:3000'
+      : `file://${path.join(__dirname, '../build/index.html')}`
+  )
 
   win.maximize();
 }
