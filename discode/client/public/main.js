@@ -23,7 +23,7 @@ function createWindow() {
 
   // win.loadURL("http://localhost:3000");
 
-  var isDev = false;
+  var isDev = true;
 
 
   win.loadURL(

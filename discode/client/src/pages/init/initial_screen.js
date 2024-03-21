@@ -92,7 +92,7 @@ const InitialScreen = () => {
                             window.electron_.ipcRenderer.once("selected-file", (location) => {
 
                                 console.log(location);
-                                navigate("/project", {state: {path: location}});
+                                navigate("/project", {state: {path: location, project_name: ""}});
                     
         
                             });
@@ -121,7 +121,7 @@ const InitialScreen = () => {
                             
                         <Grid item  >
                             <Card sx={{ maxWidth: '22%', maxHeight: 200,}}  >
-                            <CardActionArea onClick={(_) => navigate("/project", {state: {path: project["path"]}})}>
+                            <CardActionArea onClick={(_) => navigate("/project", {state: {path: project["path"], project_name: project["name"]}})}>
 
                                 <CardMedia sx={{ height: 120,  }} image={banner} title="Test"  />
 

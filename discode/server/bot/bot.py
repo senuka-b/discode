@@ -1,4 +1,4 @@
-import inspect
+import threading
 import types
 import discord, datetime, aiohttp, traceback, os, logging, typing
 
@@ -43,6 +43,7 @@ class DiscodeBot(commands.Bot):
         self.logger = logging.getLogger(self.__class__.__name__)
         self.ext_dir = ext_dir
         self.synced = False
+        self.is_running = False
 
     async def _load_extensions(self) -> None:
 
@@ -75,14 +76,24 @@ class DiscodeBot(commands.Bot):
             self.synced = not self.synced
             self.logger.info("Synced command tree")
 
-    def run(self, *args: typing.Any, **kwargs: typing.Any) -> None:
-        load_dotenv()
+    def run(self, token: str, *args: typing.Any, **kwargs: typing.Any) -> None:
+
         try:
-            super().run(str(os.getenv("TOKEN")), *args, **kwargs)
+            super().run(token, *args, **kwargs)
             return self
         except (discord.LoginFailure, KeyboardInterrupt):
             self.logger.info("Exiting...")
             exit()
+
+    async def _start(self, data: dict):
+        token = data["bot_token"]
+
+        self.command_prefix = commands.when_mentioned_or(data["default_command_prefix"])
+
+        self.bot_thread = threading.Thread(target=self.run, args=(token,))
+        self.bot_thread.start()
+
+        self.is_running = True
 
     @property
     def user(self) -> discord.ClientUser:

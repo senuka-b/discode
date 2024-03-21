@@ -52,7 +52,7 @@ export default function CreateProjectDialog({open, handleClose}) {
 
                     } else {
 
-                        navigate("/project", {state: {path: location+"/"+name}})
+                        navigate("/project", {state: {path: location+"/"+name, project_name: name}})
                     }
                 });
                 

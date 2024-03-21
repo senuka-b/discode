@@ -62,7 +62,10 @@ const ProjectHomeComponent = () => {
 
   const {state} = useLocation();
 
+  console.log("State", state)
+
   var path = state.path;
+  var project_name = state.project_name;
 
   useEffect(() => {
     
@@ -271,7 +274,7 @@ const ProjectHomeComponent = () => {
   const reloadBot = (event) => {
    
 
-    api.reloadCommands(path);
+    api.reloadCommands(path, project_name);
 
     enqueueSnackbar("Bot reloaded successfully", {variant: "success", autoHideDuration: 2000, anchorOrigin: {horizontal: "center", vertical: "bottom"}})
   }
@@ -281,7 +284,11 @@ const ProjectHomeComponent = () => {
   const handleAutoSave = useCallback((event) => {
    
     setTimeout(() => {
+      if (!reactFlowInstance) {return}
+
+
       let data = reactFlowInstance.toObject();
+
 
 
       console.log("REACTFLOW", data)

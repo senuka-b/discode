@@ -24,7 +24,7 @@ socket = SocketIO(app, cors_allowed_origins="*")
 messenger = SocketMessenger(socket)
 
 
-config = Configuration(debug=False)
+config = Configuration(debug=True)
 
 node_to_code = NodeToCode()
 
@@ -78,9 +78,19 @@ async def get_components():
 @app.route("/commands/reload/<path:file_path>", methods=["GET"])
 async def create_command(file_path):
 
-    extension = ExtensionHandler(path=file_path)
+    extension = ExtensionHandler(
+        path=file_path, project_name=request.args.get("project_name")
+    )
+
+    print("FILE PATH", file_path)
 
     extensions = extension.get_extension_data()
+
+    project = extension.get_project_data()
+
+    if not bot.is_running:
+        print("Bot started")
+        await bot._start(data=project)
 
     bot.validate_commands_and_events()
 

@@ -39,9 +39,10 @@ class DiscodeAPI {
         return await response.json()
     }
 
-    reloadCommands (path) {
-        return new Promise((resolve, reject) => {fetch(this.url+"/commands/reload/"+encodeURIComponent(path) , {
+    reloadCommands (path, project_name) {
+        return new Promise((resolve, reject) => {fetch(this.url+"/commands/reload/"+encodeURIComponent(path)+"?project_name="+encodeURIComponent(project_name) , {
             method: "GET",
+            
         }).then((value) => {
             
             value.text().then((_data) => {
