@@ -128,20 +128,33 @@ const ProjectHomeComponent = () => {
     };
   }, []);
 
+  
+  
+
   const onNodeDelete = useCallback((params) => {
-    console.log(params, "Node deleted");
   
     setNodes((prevNodes) => {
-      return prevNodes.map(element => {
+      var nodes = prevNodes.map(element => {
         if (element.data.variables) {
 
           params.forEach(deleted_node => {
             element.data.variables = element.data.variables.filter(_var => _var !== deleted_node.id);
           });
         }
+
+
         return element;
-      });
-    });
+      }).filter((n) =>  !params.some((deleted_node) => deleted_node.id === n.id));
+
+    
+    console.log("_nodes", nodes)
+    return nodes
+    }
+    
+    );
+
+
+
   }, []);
 
   const onConnect = useCallback(
@@ -263,16 +276,32 @@ const ProjectHomeComponent = () => {
     enqueueSnackbar("Bot reloaded successfully", {variant: "success", autoHideDuration: 2000, anchorOrigin: {horizontal: "center", vertical: "bottom"}})
   }
 
-  const handleAutoSave = (event) => {
-    let data = reactFlowInstance.toObject();
+ 
 
-    socket.emit("auto-save", {
-      path,
-      name: extensions[extensionValue],
-      node_data: data
-    })
+  const handleAutoSave = useCallback((event) => {
+   
+    setTimeout(() => {
+      let data = reactFlowInstance.toObject();
 
-  }
+
+      console.log("REACTFLOW", data)
+      console.log("nodes", nodes)
+  
+      socket.emit("auto-save", {
+        path,
+        name: extensions[extensionValue],
+        node_data: data
+      })
+    }, 100);
+
+   
+  }, [nodes, edges])
+
+  
+  useEffect(() => {
+    handleAutoSave();
+  }, [nodes, handleAutoSave, edges]);
+
 
   const handleExtensionClick = (event, extension) => {
     switch_extension(extension);
@@ -353,25 +382,10 @@ const ProjectHomeComponent = () => {
 
         nodes={nodes}
         edges={edges}
-        onNodesChange={(nodeChange) => {
-          onNodesChange(nodeChange)
-          handleAutoSave();
-
-        }}
-        onEdgesChange={(edgeChange) => {
-          onEdgesChange(edgeChange);
-          handleAutoSave();
-
-        }}
-        onConnect={(on_connect) => {
-          onConnect(on_connect);
-          handleAutoSave();
-        }}
-        onNodesDelete={(nodeDelete) => {
-          onNodeDelete(nodeDelete);
-          handleAutoSave();
-
-        }}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        onNodesDelete={onNodeDelete}
         
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
