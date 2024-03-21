@@ -49,7 +49,7 @@ export default function TreeView() {
         <TextField  label="Search 🔎" onChange={(e) => setSearchValue(e.target.value)} value={searchValue} InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white', backgroundColor: 'rgba(127, 235, 222, 0.1)', borderRadius: '10px'}}} variant="filled" className='rounded-lg no-drag' error={false} helperText="" size="small"/>
        
 
-        <nav class="tree-nav" className='bg-lime-500/5 pt-2'>
+        <nav class="tree-nav" className='bg-lime-500/5 pt-2' style={{maxHeight: 'calc(100vh - 150px)', overflowY: 'auto'}}>
 
             {searchValue === '' ? Array.from(data).map(([key, value]) => (
                 <details class="tree-nav__item is-expandable" open>
