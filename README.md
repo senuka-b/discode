@@ -125,41 +125,41 @@ Initial release
 
 ## Planned features
 
-- [] Logical actions
+- [ ] Logical actions
     
-    - [] if-then-else action
-    - [] loop action
+    - [ ] if-then-else action
+    - [ ] loop action
 
-- [] Command checks
+- [ ] Command checks
 
-- [] Slash command support
+- [ ] Slash command support
 
-- [] Hybrid command support
+- [ ] Hybrid command support
 
-- [] Database functionality (for storing data)
+- [ ] Database functionality (for storing data)
 
-- [] Action components
+- [ ] Action components
 
     - [x] Say action
     - [x] Get Channel action
     - [x] Clear messages action
     - [x] Kick user action
     - [x] Ban user action
-    - [] Embed action
-    - [] Send embed action
-    - [] Send file action
-    - [] ...
+    - [ ] Embed action
+    - [ ] Send embed action
+    - [ ] Send file action
+    - [ ] ...
 
-- [] Error handling
+- [ ] Error handling
     
-    - [] Per command
-    - [] Global error handling
+    - [ ] Per command
+    - [ ] Global error handling
 
-- [] Help command
+- [ ] Help command
 
-- [] Help templated extension
+- [ ] Help templated extension
 
-- [] Error handler templated extension
+- [ ] Error handler templated extension
 
 
 
