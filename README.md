@@ -16,7 +16,11 @@ Discode is created with React on top of electron. It uses python as it's backend
 
 Something like this:
 
-https://github.com/yetimeh/discode/assets/111502106/5d4d9f14-d2d3-4f30-b9bf-803be96a44e6
+
+
+https://github.com/yetimeh/discode/assets/111502106/b47c6578-72b1-4bec-84f1-9dc627797047
+
+
 
 Concept Video:
 
