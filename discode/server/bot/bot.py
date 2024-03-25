@@ -10,6 +10,7 @@ import os
 
 from bot.cogs.general import General
 from nodetocode.nodetocode import NodeToCode
+from api.socket import SocketMessenger
 
 from errors import ChannelNotFound, NoArgumentsPassed
 
@@ -105,7 +106,7 @@ class DiscodeBot(commands.Bot):
     def uptime(self) -> datetime.timedelta:
         return datetime.datetime.utcnow() - self._uptime
 
-    async def create_command(self, messenger, _command: dict):
+    async def create_command(self, messenger: SocketMessenger, _command: dict):
 
         p(_command)
 
@@ -124,7 +125,7 @@ class DiscodeBot(commands.Bot):
                 return
 
             except NoArgumentsPassed as e:
-                messenger.error(message=e.message)
+                messenger.error(message=e.message, node=e.command_node)
                 return
 
             await callback()

@@ -126,11 +126,26 @@ const ProjectHomeComponent = () => {
       enqueueSnackbar(message,  {variant: "error", anchorOrigin: {horizontal: "right", vertical: "bottom"}} );
     });
 
+    
+
     return () => {
       socket.off('error');
+     
     };
   }, []);
 
+  useEffect(() => {
+  
+
+    window.electron_.ipcRenderer.on("clicked-log", (node) => {
+      console.log("clicked node", node);
+    })
+  
+    return () => {
+     
+    }
+  }, [])
+  
   
   
 

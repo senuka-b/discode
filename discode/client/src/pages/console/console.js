@@ -22,14 +22,22 @@ export default function Console() {
 
   var socket = io('http://localhost:5000')
 
-  socket.on("error", ( {message} )=> {
-    message = 'ERROR: ' + message
+  socket.on("error", ( {message, node} )=> {
+    message = `ERROR: ${message}`
 
-    setlogs([...logs, message])
+    window.electron_.saveConsoleState([...logs, {message, node}]);
+    
+    setlogs([...logs, {message, node}])
 
-    window.electron_.saveConsoleState(logs);
+
 
   })
+
+  const handleClickLog = (node) => {
+
+    window.electron_.ipcRenderer.send('clicked-log', node);
+  }
+
 
   return (
     <div style={{
@@ -42,10 +50,10 @@ export default function Console() {
     }}>
         {logs.length === 0 ? "No logs yet!" :  (
     <div>
-        {logs.map((log, index) => (
+        {logs.map(({message, node}, index) => (
             <div>
-                    <div style={{paddingBottom: 10, fontFamily: 'Consolas, Lucida Console', color:log.startsWith("ERROR") ? 'red' : 'cyan'}}>
-                        {log}
+                    <div className='logDiv' style={{paddingBottom: 10, fontFamily: 'Consolas, Lucida Console', color:message.startsWith("ERROR") ? 'red' : 'cyan',}} onClick={() =>{ handleClickLog(node)}} >
+                        {message}
 
                     </div>
      

@@ -207,3 +207,7 @@ summary::-webkit-details-marker {
 .visible {
   opacity: 1;
 }
+
+.logDiv:hover {
+  background-color: #666;
+}

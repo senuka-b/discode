@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, shell} = require('electron')
+const { app, BrowserWindow, ipcMain, dialog, shell, } = require('electron')
 
 const path = require('path')
 const fs = require('fs');
@@ -9,10 +9,11 @@ require('@electron/remote/main').initialize()
 
 var isDev = true;
 
+var win;
 
 function createWindow() {
   // Create the browser window.
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     icon: path.join(__dirname, 'icon.ico'),
     width: 800,
     height: 600,
@@ -35,6 +36,7 @@ function createWindow() {
   )
 
   win.maximize();
+
 }
 
 app.on('ready', createWindow)
@@ -142,9 +144,10 @@ var console_state = [
 ];
 
 ipcMain.on("open-console", (event) => {
-  const win = new BrowserWindow({
+  const console_win = new BrowserWindow({
     icon: path.join(__dirname, 'icon.ico'),
     width: 864,
+
     title: "Discode - Console </>",
     height: 500,
     webPreferences: {
@@ -156,18 +159,27 @@ ipcMain.on("open-console", (event) => {
   })
 
   
-  win.setMenuBarVisibility(false);
+  console_win.setMenuBarVisibility(false);
 
-  win.loadURL(
+  console_win.loadURL(
     isDev
       ? `http://localhost:3000#/console?data=${encodeURIComponent(JSON.stringify(console_state))}`
       : `file://${path.join(__dirname, '../build/index.html#/console')}?data=${encodeURIComponent(JSON.stringify(console_state))}`
   )
 
 
+  console_win.webContents.on('did-finish-load', () => {
+    console_win.setTitle("Discode - Console </>",)
+  });
+  
+
+
 
 })
 
+ipcMain.on("clicked-log", (event, node) => win.webContents.send("clicked-log", node))
+
+
 ipcMain.on("save-console-state", (event, data) => {
-  console_state.push(...data);
+  console_state = data;
 })

@@ -63,6 +63,7 @@ class NodeToCode:
             "commands": {
                     "command_id": {
                         "name": command_name
+                        "id": command_node_id
                         "description: description
                         "params": [
                             {
@@ -103,6 +104,7 @@ class NodeToCode:
 
                 self.data["commands"][node["id"]] = {
                     "name": node["data"]["command_name"],
+                    "id": node["id"],
                     "description": node["data"].get("description", None),
                     "parameters": (
                         self.parse_parameters(node["data"]["parameters"])
@@ -148,7 +150,8 @@ class NodeToCode:
             is_required_count > 0 and not len(arguments.split(" ")) >= is_required_count
         ):
             raise NoArgumentsPassed(
-                f"No arguments passed, or is missing a required argument. {is_required_count} parameters are required!"
+                f"No arguments passed, or is missing a required argument. {is_required_count} parameters are required!",
+                ctx.command_node,
             )
 
         if arguments:
@@ -278,6 +281,8 @@ class NodeToCode:
 
     async def create_callback(self, context: Context, command: dict, arguments: str):
 
+        context.command_node = command["name"]
+
         arguments = await self.parse_arguments(
             command["parameters"], arguments, ctx=context
         )
@@ -300,7 +305,7 @@ class NodeToCode:
 
                 if variable:
                     if not variables.get(variable[0], None):
-                        raise ChannelNotFound(message=variable[0])
+                        raise ChannelNotFound(message=variable[0], node=action["id"])
                     else:
                         action["data"]["channel"] = variables[variable[0]]
                 else:
