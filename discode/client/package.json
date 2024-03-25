@@ -54,7 +54,6 @@
     "extends": null,
     "appId": "com.yeti.discode",
     "files": [
-      "dist/**/*",
       "build/**/*",
       "node_modules/**/*",
       "package.json"

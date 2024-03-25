@@ -1,12 +1,11 @@
 import threading
-import types
-import discord, datetime, aiohttp, traceback, os, logging, typing
+import discord, datetime, aiohttp, traceback, os, logging, typing, asyncio
 
 from pprint import pprint as p
 
 from discord.ext import commands
 
-from dotenv import load_dotenv
+
 import os
 
 from bot.cogs.general import General
@@ -94,6 +93,8 @@ class DiscodeBot(commands.Bot):
         self.bot_thread.start()
 
         self.is_running = True
+
+        print("REAched here")
 
     @property
     def user(self) -> discord.ClientUser:

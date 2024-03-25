@@ -2,16 +2,12 @@ from api.api import run_api
 
 
 import threading, os, discord
+from engineio.async_drivers import gevent
 
 
-from bot.bot import DiscodeBot
+app_thread = threading.Thread(target=run_api)
 
-bot = DiscodeBot()
-
-
-app_thread = threading.Thread(target=run_api, args=(bot,))
 
 if __name__ == "__main__":
-
     app_thread.start()
     app_thread.join()

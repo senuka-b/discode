@@ -147,6 +147,21 @@ class DiscodeAPI {
     })
     }
 
+    // stopBot () {
+        
+    //     return new Promise((resolve, reject) => {fetch(this.url+"/bot/stop" , {
+    //         method: "GET",
+    //         headers: {
+    //             "Content-Type": "application/json"
+    //         }
+    //     }).then((value) => {
+            
+    //         value.text().then((_data) => {
+    //            resolve(_data);
+    //         })
+    //     })})
+    // }
+
 
     
 }

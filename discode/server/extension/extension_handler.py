@@ -6,14 +6,15 @@ class ExtensionHandler:
     def __init__(self, **kwargs):
 
         self.path: str = kwargs.get("path")
-        
 
         if self.path.endswith(".discode"):
 
-            kwargs["project_name"] = re.search(r'([^/\\]+\.discode)$', self.path).group(1)
+            kwargs["project_name"] = re.search(r"([^/\\]+\.discode)$", self.path).group(
+                1
+            )
             self.path = re.sub(r"[^\\]+\.discode$", "", self.path)
 
-        self.project_name = kwargs.get("project_name", None)
+        self.project_name = kwargs.get("project_name", "")
 
         self.bot_token = kwargs.get("bot_token", None)
         self.default_command_prefix = kwargs.get("default_command_prefix", None)
@@ -60,7 +61,12 @@ class ExtensionHandler:
         description: str = "",
     ):
 
-        with open(self.path + f"/{self.project_name}" + f"/exts/{name.lower()}.ext.discode", "w") as f:
+        with open(
+            self.path
+            + f"/{self.project_name or ''}"
+            + f"/exts/{name.lower()}.ext.discode",
+            "w",
+        ) as f:
             json.dump(
                 {"data": {"name": name, "description": description, "node_data": {}}},
                 f,
@@ -71,28 +77,25 @@ class ExtensionHandler:
         self.apply_starter_template(name)
         return {"data": "success", "extension": name}
 
-    def update_extension(self, name: str, node_data: dict): 
-        paths = sorted(Path(self.path+"/exts/").iterdir(), key=os.path.getmtime)
-        
-        
+    def update_extension(self, name: str, node_data: dict):
+        paths = sorted(Path(self.path + "/exts/").iterdir(), key=os.path.getmtime)
+
         for ext in paths:
-            with ext.open("r") as f: # Because r+ doesn't work that fast
-                
-                
+            with ext.open("r") as f:  # Because r+ doesn't work that fast
+
                 _data = json.load(f)
-                
+
                 if _data["data"]["name"].lower() == name.lower():
                     _data["data"]["node_data"] = node_data
-                    
+
                     with ext.open("w") as fw:
 
                         json.dump(_data, fw, indent=4)
                     return "ok", 200
-        
+
     def get_extension(self, name: str):
-        paths = sorted(Path(self.path+"/exts/").iterdir(), key=os.path.getmtime)
-        
-        
+        paths = sorted(Path(self.path + "/exts/").iterdir(), key=os.path.getmtime)
+
         for ext in paths:
             with ext.open("r") as f:
                 _data = json.load(f)
@@ -100,42 +103,40 @@ class ExtensionHandler:
                     return _data["data"]["node_data"]
 
         return []
-    
+
     def get_extension_data(self):
-        paths = Path(self.path+"/exts/").iterdir()
-         
+        paths = Path(self.path + "/exts/").iterdir()
+
         data = []
-         
+
         for ext in paths:
             with ext.open("r") as f:
                 _data = json.load(f)
-                
+
                 data.append(_data["data"]["node_data"])
-                
+
                 f.close()
-                
+
         return data
-        
-    
+
     def rename_extension(self, name: str, rename: str):
-        paths = sorted(Path(self.path+"/exts/").iterdir(), key=os.path.getmtime)
-        
+        paths = sorted(Path(self.path + "/exts/").iterdir(), key=os.path.getmtime)
+
         for ext in paths:
             with ext.open("r") as f:
                 _data = json.load(f)
                 if _data["data"]["name"].lower() == name.lower():
                     _data["data"]["name"] = rename
-                    
+
                     with ext.open("w") as fw:
-                    
+
                         json.dump(_data, fw, indent=4)
-                    
-                    
+
                     return "ok", 200
 
     def delete_extension(self, name: str):
-        paths = sorted(Path(self.path+"/exts/").iterdir(), key=os.path.getmtime)
-        
+        paths = sorted(Path(self.path + "/exts/").iterdir(), key=os.path.getmtime)
+
         for ext in paths:
             with ext.open("r") as f:
                 _data = json.load(f)
@@ -148,7 +149,7 @@ class ExtensionHandler:
     ):
         data = {"extensions": []}
 
-        paths = sorted(Path(self.path+"/exts/").iterdir(), key=os.path.getctime)
+        paths = sorted(Path(self.path + "/exts/").iterdir(), key=os.path.getctime)
 
         for ext in paths:
             with ext.open("r") as f:
@@ -159,12 +160,11 @@ class ExtensionHandler:
 
         return data
 
-   
     def apply_starter_template(self, template_name: str):
 
         with open(
             self.path
-            + f"/{self.project_name or ""}/exts/{template_name.lower()}.ext.discode",
+            + f"/{self.project_name or ''}/exts/{template_name.lower()}.ext.discode",
             "r+",
         ) as f:
             data = json.load(f)
@@ -236,12 +236,10 @@ class ExtensionHandler:
             f.seek(0)
 
             json.dump(data, f, indent=4)
-            
+
     def get_project_data(self):
-        
-        with open(self.path+"/"+self.project_name+'.discode', "r") as f:
+
+        with open(self.path + "/" + self.project_name + ".discode", "r") as f:
             data = json.load(f)
-            
+
             return data["data"]
-        
-        

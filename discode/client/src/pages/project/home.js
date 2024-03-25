@@ -279,6 +279,21 @@ const ProjectHomeComponent = () => {
     enqueueSnackbar("Bot reloaded successfully", {variant: "success", autoHideDuration: 2000, anchorOrigin: {horizontal: "center", vertical: "bottom"}})
   }
 
+  const openDocumentation = () => {
+    window.electron_.openDocumentation.open();
+  }
+   
+
+
+  // const stopBot = (event) => {
+  //   console.log("Stopping bot..")
+
+  //   api.stopBot().then((value) => {
+  //     enqueueSnackbar(value === 'running' ? "Bot is not running" : "Bot shutdown successfully", {variant: value === 'running' ? "error" : "success", autoHideDuration: 2000, anchorOrigin: {horizontal: "center", vertical: "bottom"}})
+      
+  //   })
+  // }
+
  
 
   const handleAutoSave = useCallback((event) => {
@@ -494,12 +509,6 @@ const ProjectHomeComponent = () => {
             </div>
 
             <div className='mb-5'>
-              <Button fullWidth size="small" variant='contained' color='error' onClick={reloadBot} startIcon={< Stop />} >Stop bot</Button>
-
-
-            </div>
-
-            <div className='mb-5'>
 
               <Button size="small" variant='contained' color='secondary' onClick={() => {
                 console.log(nodes)
@@ -508,7 +517,7 @@ const ProjectHomeComponent = () => {
             </div>
 
 
-            <Button size="small" variant='contained' color='info' onClick={reloadBot} startIcon={< HelpOutline />} >Help?</Button>
+            <Button size="small" variant='contained' color='info' onClick={openDocumentation} startIcon={< HelpOutline />} >Help?</Button>
 
           </div>
 

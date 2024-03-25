@@ -27,6 +27,12 @@ contextBridge.exposeInMainWorld(
       message: (msg) => {
         ipcRenderer.send("show-dialog", msg);
       }
+    },
+
+    openDocumentation: {
+      open: () => {
+        ipcRenderer.send("open-documentation");
+      }
     }
     }
   

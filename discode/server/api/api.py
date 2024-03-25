@@ -12,6 +12,7 @@ from nodetocode.nodetocode import NodeToCode
 from .socket import SocketMessenger
 
 from flask_socketio import SocketIO
+from engineio.async_drivers import gevent
 
 
 app = Flask(__name__)
@@ -81,8 +82,6 @@ async def create_command(file_path):
     extension = ExtensionHandler(
         path=file_path, project_name=request.args.get("project_name")
     )
-
-    print("FILE PATH", file_path)
 
     extensions = extension.get_extension_data()
 
@@ -159,6 +158,20 @@ async def delete_extension():
         return extension.delete_extension(data["name"])
 
 
+# @app.route("/bot/stop", methods=["GET"])
+# async def stop_bot():
+#     print(bot.is_running)
+
+#     if bot.is_running:
+
+#         await bot.stop()
+
+#         return "success", 200
+
+#     else:
+#         return "running", 200
+
+
 @socket.on("auto-save")
 def update_extension(data):
 
@@ -167,8 +180,8 @@ def update_extension(data):
     return extension.update_extension(data["name"], data["node_data"])
 
 
-def run_api(bot_instance: commands.Bot):
+def run_api():
     global bot
-    bot = bot_instance
+    bot = DiscodeBot()
 
     socket.run(app)

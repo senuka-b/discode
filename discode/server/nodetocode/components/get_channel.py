@@ -21,4 +21,4 @@ class GetChannel(BaseCommand):
 
             return self.context.bot.get_channel(self.channel)
 
-        return discord.utils.get(self.context.bot.get_all_channels(), name=self.channel)
+        return discord.utils.get(self.context.guild.text_channels, name=self.channel)

@@ -2,23 +2,26 @@ import json, os
 
 
 class Configuration:
-    def __init__(self, debug=False,):
+    def __init__(
+        self,
+        debug=False,
+    ):
         self.location = (
             "./config/config.json" if not debug else "./config/debug-config.json"
         )
-
-
 
         self.validate_project_paths()
 
     def validate_project_paths(self):
         data = self.load_data()
-        
-        for  recent_project in data["recent_projects"]:
-            if not os.path.exists(recent_project["path"]+f"/{recent_project["name"]}.discode"):
-                
+
+        for recent_project in data["recent_projects"]:
+            if not os.path.exists(
+                recent_project["path"] + f"/{recent_project['name']}.discode"
+            ):
+
                 print("Project path not found")
-                
+
                 data["recent_projects"].remove(recent_project)
 
         self.write_data(data)
@@ -35,8 +38,7 @@ class Configuration:
 
     def fetch_projects(self):
         self.validate_project_paths()
-        
-        
+
         data = self.load_data()
 
         return data["recent_projects"]
@@ -51,5 +53,5 @@ class Configuration:
         data = self.load_data()
 
         data["recent_projects"].append({"name": project_name, "path": path})
-        
+
         self.write_data(data)
