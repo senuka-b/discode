@@ -33,7 +33,16 @@ contextBridge.exposeInMainWorld(
       open: () => {
         ipcRenderer.send("open-documentation");
       }
+    },
+
+    openConsole: () => {
+      ipcRenderer.send("open-console");
+    } ,
+
+    saveConsoleState: (data) => {
+      ipcRenderer.send("save-console-state", data);
     }
+
     }
   
 );

@@ -7,10 +7,13 @@ const fs = require('fs');
 
 require('@electron/remote/main').initialize()
 
+var isDev = true;
+
+
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    icon: path.join(__dirname, 'preload.js'),
+    icon: path.join(__dirname, 'icon.ico'),
     width: 800,
     height: 600,
     webPreferences: {
@@ -23,7 +26,6 @@ function createWindow() {
 
   // win.loadURL("http://localhost:3000");
 
-  var isDev = true;
 
 
   win.loadURL(
@@ -133,4 +135,39 @@ ipcMain.on('show-dialog', (event, data) => {
 
 ipcMain.on("open-documentation", (event) => {
   shell.openExternal("https://yetimeh.github.io/discode/")
+})
+
+
+var console_state = [
+];
+
+ipcMain.on("open-console", (event) => {
+  const win = new BrowserWindow({
+    icon: path.join(__dirname, 'icon.ico'),
+    width: 864,
+    title: "Discode - Console </>",
+    height: 500,
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: true,
+
+      preload: path.join(__dirname, 'preload.js')
+    }
+  })
+
+  
+  win.setMenuBarVisibility(false);
+
+  win.loadURL(
+    isDev
+      ? `http://localhost:3000#/console?data=${encodeURIComponent(JSON.stringify(console_state))}`
+      : `file://${path.join(__dirname, '../build/index.html#/console')}?data=${encodeURIComponent(JSON.stringify(console_state))}`
+  )
+
+
+
+})
+
+ipcMain.on("save-console-state", (event, data) => {
+  console_state.push(...data);
 })

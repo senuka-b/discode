@@ -282,6 +282,12 @@ const ProjectHomeComponent = () => {
   const openDocumentation = () => {
     window.electron_.openDocumentation.open();
   }
+
+  const openConsole = () => {
+    window.electron_.openConsole();
+  }
+   
+
    
 
 
@@ -510,9 +516,7 @@ const ProjectHomeComponent = () => {
 
             <div className='mb-5'>
 
-              <Button size="small" variant='contained' color='secondary' onClick={() => {
-                console.log(nodes)
-              }} startIcon={< Terminal />} >Open console</Button>
+              <Button size="small" variant='contained' color='secondary' onClick={openConsole} startIcon={< Terminal />} >Open console</Button>
 
             </div>
 
