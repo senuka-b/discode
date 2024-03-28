@@ -85,13 +85,19 @@ const ProjectHomeComponent = () => {
 
 
   }, [])
+
   
 
   const switch_extension = (extension_name) => {
     api.getExtension(state.path, extension_name).then((value) => {
 
+        console.log("NODES_", value.nodes);
+
+
+        value.nodes.map((node) => node.data.setNodes = setNodes);
 
         setNodes(value.nodes);
+
 
         setEdges(value.edges);
 
@@ -274,7 +280,7 @@ const ProjectHomeComponent = () => {
         type: type.toLowerCase().replace(" ", "_"),
         position,
 
-        data: { label: `NOT IMPLEMENTED YET NODE`, variables: [], parameters: [] },
+        data: { label: `NOT IMPLEMENTED YET NODE`, variables: [], parameters: [], setNodes},
       };
 
       console.log("NEWNODE", newNode.id)
@@ -319,6 +325,7 @@ const ProjectHomeComponent = () => {
 
   const handleAutoSave = useCallback((event) => {
    
+
     setTimeout(() => {
       if (!reactFlowInstance) {return}
 

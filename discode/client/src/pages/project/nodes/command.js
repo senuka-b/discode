@@ -8,13 +8,16 @@ import { pink } from '@mui/material/colors';
 import { v4 as uuidv4 } from 'uuid';
 
 
-function ParameterComponent({data, index,}) {
+function ParameterComponent({data, _index,  node_id}) {
     const [paramName, setparamName] = useState('')
-    const [paramType, setParamType] = useState('');
+    const [paramType, setParamType] = useState(1);
     const [required, setRequired] = useState(false);
+    const [index, setIndex] = useState(0);
 
 
     const handleParamTypeChange = (event) => {
+        console.log("Set param type", event.target.value);
+
         setParamType(event.target.value);
       };
 
@@ -25,10 +28,43 @@ function ParameterComponent({data, index,}) {
     const handleRequiredChange = (event) => {
         setRequired((is_checked) => !is_checked);
     }
+
+
+
+    useEffect(() => {
+        setIndex(_index);
+    
+
+        console.log("INDEX", _index, "parameters", data.parameters, data);
+
+        if (data.parameters[_index].paramName !== paramName) {
+        setparamName(data.parameters[_index].paramName);
+
+        }
+
+        setParamType(data.parameters[_index].paramType);
+        setRequired(data.parameters[_index].required);
+
+    }, [])
+    
+
+    
      
 
     useEffect(() => {
-        data["parameters"][index] = { paramName, paramType, required };
+        console.log("Parameter index", index, "parameters", data);
+        console.log("parameter changed")
+
+
+        data.setNodes((prev_nodes) => prev_nodes.map((node) => {
+            if (node.id === node_id) {
+                
+                node.data["parameters"][index] = {paramName, paramType, required}
+
+            }
+            return node;
+        })
+        )
 
    
     }, [paramName, paramType, required]);
@@ -42,9 +78,10 @@ function ParameterComponent({data, index,}) {
     <div className='flex-grow ml-5'>
 
         <FormControl required  fullWidth  variant='filled' >
+       
             <InputLabel id="parameter-type-label" style={{color: "white", opacity: "70%", }}>Parameter type</InputLabel>
 
-            <Select labelId='parameter-type-label' value={paramType} onChange={handleParamTypeChange}   className='nodrag ' defaultValue={'member'} sx={{color: 'yellow', height: 47}} color="success" MenuProps={{
+            <Select labelId='parameter-type-label' value={paramType} onChange={handleParamTypeChange}   className='nodrag ' sx={{color: 'yellow', height: 47}} color="success" MenuProps={{
                  PaperProps: {
                     style: {
                     backgroundColor: pink[100], 
@@ -62,7 +99,7 @@ function ParameterComponent({data, index,}) {
                 
 
             </Select>
-
+   
 
 
         </FormControl>
@@ -95,43 +132,94 @@ function ParameterComponent({data, index,}) {
 }
 
 
-function CommandNode({ data }) {
+function CommandNode({ data, id }) {
  const [parameters, setParameters] = React.useState([])
 
- const [command_name, setCommand_name] = useState(data['command_name'])
- const [description, setDescription] = useState(data['description'])
+ const [command_name, setCommand_name] = useState('')
+ const [description, setDescription] = useState('')
 
 
 
 
- if (data.command_name !== command_name) {
-     setCommand_name(data.command_name);
-   }
+
+ useEffect(() => {
+
+    if (data.command_name !== command_name) {
+        setCommand_name(data.command_name);
+      }
+      
+    if (data.description !== description) {
+       setDescription(data.description);
+    }
    
- if (data.description !== description) {
-    setDescription(data.description);
- }
+    console.log("Parameters", data["parameters"])
+   
+    var _params = data["parameters"].map((element, index) => (
+        <ParameterComponent 
+            data={data}
+            _index={index}
+        
+            node_id={id}
+        />
+    ))
+
+    setParameters(_params);
+ 
+ }, [])
+ 
+
+   
+ 
 
   const handleCreateParameter = (event) => {
 
 
-    data["parameters"].push(
-        {
-            paramName: "",
-            paramType: "",
-            required: false
+    data.setNodes((prev_nodes) => {
+        return prev_nodes.map((node, index) => {
+            if (node.id === id) {
+                const updated_node = {...node, 
+                    data: {
+                        ...node.data,
+                        parameters: [
+                            ...node.data.parameters,
+                            {
+                                paramName: "",
+                                paramType: 1,
+                                required: false
+                            }
+                        ]
+                    }
+                   }
+
+                const param = <ParameterComponent 
+                   data={updated_node.data}
+                   _index={updated_node.data.parameters.length === 0 ? 0 : updated_node.data.parameters.length - 1}
+       
+                   node_id={id}
+                />
+
+                setParameters([...parameters, param]);
+
+                return updated_node;
+
+
         }
-    )
+        
+        return node;
+    
+    })
 
-    const param = <ParameterComponent 
-        data={data}
-        index={parameters.length}
-
-    />
+       
+            
 
 
 
-    setParameters([...parameters, param]);
+    })
+
+
+   
+
+
 
 
 
