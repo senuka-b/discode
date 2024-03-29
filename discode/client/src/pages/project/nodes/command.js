@@ -8,7 +8,7 @@ import { pink } from '@mui/material/colors';
 import { v4 as uuidv4 } from 'uuid';
 
 
-function ParameterComponent({data, index,  node_id}) {
+function ParameterComponent({data, index,  node_id, handleDeleteParameter}) {
     const [paramName, setparamName] = useState('')
     const [paramType, setParamType] = useState(1);
     const [required, setRequired] = useState(false);
@@ -16,8 +16,6 @@ function ParameterComponent({data, index,  node_id}) {
 
 
     const handleParamTypeChange = (event) => {
-        console.log("Set param type", event.target.value);
-
         setParamType(event.target.value);
       };
 
@@ -28,6 +26,8 @@ function ParameterComponent({data, index,  node_id}) {
     const handleRequiredChange = (event) => {
         setRequired((is_checked) => !is_checked);
     }
+
+    
 
 
 
@@ -72,7 +72,7 @@ function ParameterComponent({data, index,  node_id}) {
 
 
 
-    return  <div key = {uuidv4} className='items-start mt-2 flex justify-between'>
+    return  <div key = {uuidv4} className='items-start mt-2 flex justify-between' onContextMenu={() => handleDeleteParameter(index, node_id)}>
     <TextField  label="Parameter name" onChange={handleParamNameChange} value={paramName} InputLabelProps={{style: { color: 'white', opacity: '70%',  paddingTop: 2}, }} inputProps={{style: { color: 'white',}}} variant="filled" className='rounded-md nodrag h-1' error={false} helperText="" required size="small" sx={{width:160}} />
 
                 
@@ -140,39 +140,35 @@ function CommandNode({ data, id }) {
  const [description, setDescription] = useState('')
 
 
+ const handleDeleteParameter = (index, node_id) => {
+    data.setNodes((prev_nodes) => prev_nodes.map((node) => {
+        if (node.id == node_id) {
+            return {
+                ...node,
+                data: {
+                    ...node.data,
+                    parameters: node.data.parameters.filter((_, paramIndex) => {
+                        if (paramIndex !== node.data.parameters.length-1) {
+                            return true;
+                        }
+                    })
+                }
+            }
+    
+        }
+
+        return node;
+    }))
+
+    console.log("DELETE INDEX", index)
+
+    setParameters((prev_params) => prev_params.filter((_, paramIndex) => {
+        return paramIndex !== prev_params.length - 1
+    }))
+}
 
 
-
- useEffect(() => {
-
-    if (data.command_name !== command_name) {
-        setCommand_name(data.command_name);
-      }
-      
-    if (data.description !== description) {
-       setDescription(data.description);
-    }
-   
-    console.log("Parameters", data["parameters"])
-   
-    var _params = data["parameters"].map((element, index) => (
-        <ParameterComponent 
-            data={data}
-            index={index}
-        
-            node_id={id}
-        />
-    ))
-
-    setParameters(_params);
- 
- }, [])
- 
-
-   
- 
-
-  const handleCreateParameter = (event) => {
+ const handleCreateParameter = (event) => {
 
 
     data.setNodes((prev_nodes) => {
@@ -195,7 +191,7 @@ function CommandNode({ data, id }) {
                 const param = <ParameterComponent 
                    data={updated_node.data}
                    index={updated_node.data.parameters.length === 0 ? 0 : updated_node.data.parameters.length - 1}
-       
+                   handleDeleteParameter={handleDeleteParameter}
                    node_id={id}
                 />
 
@@ -210,22 +206,48 @@ function CommandNode({ data, id }) {
     
     })
 
-       
-            
-
-
-
+    
     })
+ }
 
 
+
+ useEffect(() => {
+
+    if (data.command_name !== command_name) {
+        setCommand_name(data.command_name);
+      }
+      
+    if (data.description !== description) {
+       setDescription(data.description);
+    }
    
+    console.log("Parameters", data["parameters"])
+   
+    var _params = data["parameters"].map((element, index) => (
+        <ParameterComponent 
+            data={data}
+            index={index}
+            node_id={id}
+            handleDeleteParameter={handleDeleteParameter}
+        />
+    ))
+
+    setParameters(_params);
+ 
+ }, [])
+ 
+
+
+ 
+
 
 
 
 
 
     
-  }
+  
 
   return (
    
