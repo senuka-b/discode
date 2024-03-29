@@ -160,7 +160,6 @@ function CommandNode({ data, id }) {
         return node;
     }))
 
-    console.log("DELETE INDEX", index)
 
     setParameters((prev_params) => prev_params.filter((_, paramIndex) => {
         return paramIndex !== prev_params.length - 1

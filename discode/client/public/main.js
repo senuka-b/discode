@@ -3,11 +3,10 @@ const { app, BrowserWindow, ipcMain, dialog, shell, } = require('electron')
 const path = require('path')
 const fs = require('fs');
 
-// const isDev = require('electron-is-dev')
+import isDev from 'electron-is-dev';
 
 require('@electron/remote/main').initialize()
 
-var isDev = true;
 
 var win;
 

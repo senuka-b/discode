@@ -4,7 +4,7 @@ import { Handle, Position } from 'reactflow';
 
 
 
-const GetChannel = ({data, selected}) => {
+const GetChannel = ({data, id}) => {
 
     const [text, setText] = useState(data['text'])
 
@@ -33,7 +33,13 @@ const GetChannel = ({data, selected}) => {
 
                     setText(event.target.value);
 
-                    data['text'] = event.target.value;
+                    data.setNodes((prev_nodes) => prev_nodes.map((node) => {
+                        if (node === id) {
+                            return {...node, data: {...node.data, text: event.target.value}}
+                        }
+
+                        return node;
+                    }))
             
          
 
