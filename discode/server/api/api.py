@@ -33,7 +33,7 @@ bot: DiscodeBot = None
 
 COMPONENTS = {
     "Special components": ["Command", "Event"],
-    "Action components": ["Say", "Kick user", "Ban user"],
+    "Action components": ["Say", "Kick user", "Ban user", "Clear messages"],
     "Variable components": ["Get server", "Get user", "Get role", "Get channel"],
     "Check components": ["Permissions check", "Role check", "User check"],
     "Logical components": ["If-then-else", "Loop"],

@@ -22,6 +22,7 @@ import { useLocation } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import CreateExtension from './dialogs/create_extension';
 import RenameExtension from './dialogs/rename_extension';
+import ClearMessagesNode from './nodes/clear_messages';
 
 
 
@@ -31,7 +32,8 @@ const socket = io("http://localhost:5000")
 const nodeTypes = {
   command: CommandNode,
   say: SayNode,
-  get_channel: GetChannel
+  get_channel: GetChannel,
+  clear_messages: ClearMessagesNode
 };
 
 const edgeTypes = {

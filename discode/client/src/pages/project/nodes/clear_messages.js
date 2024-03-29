@@ -4,7 +4,7 @@ import { Handle, NodeResizer, Position } from 'reactflow';
 
 
 
-const SayNode = ({data, id}) => {
+const ClearMessagesNode = ({data, id}) => {
 
     const [text, setText] = useState(data['text'])
 
@@ -18,9 +18,9 @@ const SayNode = ({data, id}) => {
         <div  >
 
         {/* <NodeResizer color="#ff0071" isVisible={selected} minWidth={150} minHeight={maxHeight}  maxHeight={maxHeight}/> */}
-        <div    className="px-2 shadow-md rounded-md bg-pink-950 py-4 mr-40  size-full">
+        <div    className="px-2 shadow-md rounded-md bg-fuchsia-950 py-4 mr-40  size-full">
              <div className="ml-1  mt-1 ">
-                <div className="text-lg font-bold">Say</div>
+                <div className="text-lg font-bold">Clear Messages</div>
                 <div className="text-gray-500 mt-3" style={{fontSize:12}}>required object: <em>TextChannel</em></div>
 
 
@@ -39,7 +39,7 @@ const SayNode = ({data, id}) => {
             
          
 
-                }} fullWidth value={text} multiline label="Text"  InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}, }}  variant="filled" className='rounded-md nodrag ' error={false} helperText="" required size="small"/>
+                }} fullWidth value={text} multiline label="Amount of messages to clear"  InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}, }}  variant="filled" className='rounded-md nodrag ' error={false} helperText="" required size="small"/>
 
 
             </div>
@@ -57,4 +57,4 @@ const SayNode = ({data, id}) => {
      );
 }
  
-export default SayNode;
+export default ClearMessagesNode;

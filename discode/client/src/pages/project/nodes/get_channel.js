@@ -34,7 +34,7 @@ const GetChannel = ({data, id}) => {
                     setText(event.target.value);
 
                     data.setNodes((prev_nodes) => prev_nodes.map((node) => {
-                        if (node === id) {
+                        if (node.id === id) {
                             return {...node, data: {...node.data, text: event.target.value}}
                         }
 

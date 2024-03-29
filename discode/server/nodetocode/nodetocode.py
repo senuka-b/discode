@@ -15,6 +15,7 @@ from errors import ChannelNotFound, NoArgumentsPassed
 
 from .components.say import Say
 from .components.get_channel import GetChannel
+from .components.clear_messages import ClearMessages
 
 
 class NonePlaceholder:
@@ -326,11 +327,27 @@ class NodeToCode:
 
                 variables[action["id"]] = await channel_action.execute()
 
+            elif action["type"] == "clear_messages":
+
+                variable = action["data"].get("variables", [])
+
+                if variable:
+                    if not variables.get(variable[0], None):
+                        raise ChannelNotFound(message=variable[0], node=action["id"])
+                    else:
+                        action["data"]["channel"] = variables[variable[0]]
+                else:
+
+                    action["data"]["channel"] = context.channel
+
+                clear_msgs = ClearMessages(context, action["data"], arguments)
+                executions.append(clear_msgs)
+
         async def callback(**kwargs):
             prev_result = None
 
             for cmd in executions:  # MY attempt to chain the resultants of each action
-                # TODO: Fix different tree resultants bug
+                # BUG: Fix different tree resultants bug
 
                 if (
                     isinstance(prev_result, discord.Message)
