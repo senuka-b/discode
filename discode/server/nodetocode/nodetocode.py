@@ -11,11 +11,12 @@ import re
 
 sys.path.append("..")
 
-from errors import ChannelNotFound, NoArgumentsPassed
+from errors import ChannelNotFound, NoArgumentsPassed, MemberNotFound
 
 from .components.say import Say
 from .components.get_channel import GetChannel
 from .components.clear_messages import ClearMessages
+from .components.kick_user import KickUser
 
 
 class NonePlaceholder:
@@ -342,6 +343,18 @@ class NodeToCode:
 
                 clear_msgs = ClearMessages(context, action["data"], arguments)
                 executions.append(clear_msgs)
+
+            elif action["type"] == "kick_user":
+                variable = action["data"].get("variables", [])
+
+                if variable:
+                    if not variables.get(variable[0], None):
+                        raise MemberNotFound(message=variable[0], node=action["id"])
+                    else:
+                        action["data"]["member"] = variables[variable[0]]
+
+                kick_user = KickUser(context, action["data"], arguments)
+                executions.append(kick_user)
 
         async def callback(**kwargs):
             prev_result = None

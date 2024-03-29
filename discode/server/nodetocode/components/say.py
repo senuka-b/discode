@@ -7,8 +7,8 @@ class Say(BaseCommand):
     def __init__(self, context: Context, command_data: dict, arguments: list):
         self.command_data = command_data
 
-        self.text = command_data["text"]
-        self.channel = command_data["channel"]
+        self.text = command_data.get("text", "")
+        self.channel = command_data.get("channel", "")
 
         self.arguments = arguments
 

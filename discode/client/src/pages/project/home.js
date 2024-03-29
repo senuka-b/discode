@@ -23,6 +23,7 @@ import { v4 as uuidv4 } from 'uuid';
 import CreateExtension from './dialogs/create_extension';
 import RenameExtension from './dialogs/rename_extension';
 import ClearMessagesNode from './nodes/clear_messages';
+import KickUser from './nodes/kick_user';
 
 
 
@@ -33,7 +34,8 @@ const nodeTypes = {
   command: CommandNode,
   say: SayNode,
   get_channel: GetChannel,
-  clear_messages: ClearMessagesNode
+  clear_messages: ClearMessagesNode,
+  kick_user: KickUser
 };
 
 const edgeTypes = {
@@ -237,7 +239,9 @@ const ProjectHomeComponent = () => {
 
           "variables": params.source.includes("command") ? ["Command Context"] :
               params.source.includes("say") ?  ["TextChannel", "Message"] :
-              params.source.includes("get_channel") ? ["TextChannel", ] : "",
+              params.source.includes("get_channel") ? ["TextChannel", ] : 
+              params.source.includes("clear_messages") ? ["List of Messages"] :
+              params.source.includes("kick_user") ? ["Member"] : "",
         }}, eds
 
         )
