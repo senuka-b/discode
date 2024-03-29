@@ -8,11 +8,11 @@ import { pink } from '@mui/material/colors';
 import { v4 as uuidv4 } from 'uuid';
 
 
-function ParameterComponent({data, _index,  node_id}) {
+function ParameterComponent({data, index,  node_id}) {
     const [paramName, setparamName] = useState('')
     const [paramType, setParamType] = useState(1);
     const [required, setRequired] = useState(false);
-    const [index, setIndex] = useState(0);
+
 
 
     const handleParamTypeChange = (event) => {
@@ -32,18 +32,13 @@ function ParameterComponent({data, _index,  node_id}) {
 
 
     useEffect(() => {
-        setIndex(_index);
-    
+ 
+        console.log("INDEX", index, "parameters", data.parameters, data);
 
-        console.log("INDEX", _index, "parameters", data.parameters, data);
-
-        if (data.parameters[_index].paramName !== paramName) {
-        setparamName(data.parameters[_index].paramName);
-
-        }
-
-        setParamType(data.parameters[_index].paramType);
-        setRequired(data.parameters[_index].required);
+       
+        setparamName(data.parameters[index].paramName);
+        setParamType(data.parameters[index].paramType);
+        setRequired(data.parameters[index].required);
 
     }, [])
     
@@ -59,8 +54,14 @@ function ParameterComponent({data, _index,  node_id}) {
         data.setNodes((prev_nodes) => prev_nodes.map((node) => {
             if (node.id === node_id) {
                 
-                node.data["parameters"][index] = {paramName, paramType, required}
-
+                return  {...node, data: 
+                    {...node.data,
+                     parameters: node.data.parameters.map((param, paramindex) => {
+                        if (paramindex === index) {
+                            return {paramName, paramType, required}
+                        }
+                        return param
+                     })  }}
             }
             return node;
         })
@@ -157,7 +158,7 @@ function CommandNode({ data, id }) {
     var _params = data["parameters"].map((element, index) => (
         <ParameterComponent 
             data={data}
-            _index={index}
+            index={index}
         
             node_id={id}
         />
@@ -193,7 +194,7 @@ function CommandNode({ data, id }) {
 
                 const param = <ParameterComponent 
                    data={updated_node.data}
-                   _index={updated_node.data.parameters.length === 0 ? 0 : updated_node.data.parameters.length - 1}
+                   index={updated_node.data.parameters.length === 0 ? 0 : updated_node.data.parameters.length - 1}
        
                    node_id={id}
                 />
