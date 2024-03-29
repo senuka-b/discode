@@ -113,13 +113,11 @@ Initial release
 - Get Channel action
 - Clear messages action
 - Kick user action
-- Ban user action
 
 ##### Interface actions
 
 - Console
 - Reload bot
-- Stop bot
 - Help linking to documentation
 
 ##### Bug fixes
@@ -148,7 +146,7 @@ Initial release
     - [x] Get Channel action
     - [x] Clear messages action
     - [x] Kick user action
-    - [x] Ban user action
+    - [ ] Ban user action
     - [ ] Embed action
     - [ ] Send embed action
     - [ ] Send file action
