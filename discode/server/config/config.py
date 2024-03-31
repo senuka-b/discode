@@ -6,9 +6,7 @@ class Configuration:
         self,
         debug=False,
     ):
-        self.location = (
-            "./config/config.json" if not debug else "./config/debug-config.json"
-        )
+        self.location = "./config.json" if not debug else "./debug-config.json"
 
         self.validate_project_paths()
 

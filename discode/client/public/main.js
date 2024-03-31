@@ -3,8 +3,7 @@ const { app, BrowserWindow, ipcMain, dialog, shell, } = require('electron')
 const path = require('path')
 const fs = require('fs');
 
-import isDev from 'electron-is-dev';
-
+var isDev = false; // isDev module is failing.
 require('@electron/remote/main').initialize()
 
 
@@ -62,7 +61,7 @@ app.on('activate', function () {
 
 async function createDiscodeProjectsFolder() {
   const documentsPath = app.getPath('documents');
-  const discodeProjectsFolderPath = path.join(documentsPath, 'Discode Projects');
+  const discodeProjectsFolderPath = path.join(documentsPath, isDev ? 'DEV-Discode Projects' : 'Discode Projects');
 
   try {
       await fs.promises.access(discodeProjectsFolderPath, fs.constants.F_OK);
@@ -87,7 +86,7 @@ ipcMain.on('open-folder-dialog', (event) => {
 
 
   dialog.showOpenDialog({
-    defaultPath: path.join(documentsPath, 'Discode Projects'),
+    defaultPath: path.join(documentsPath, isDev ? 'DEV-Discode Projects' : 'Discode Projects'),
     filters: [
       {name: "Discode Project File", extensions: ["discode"]}
     ],
@@ -108,7 +107,7 @@ ipcMain.on('open-file-dialog', (event) => {
 
 
   dialog.showOpenDialog({
-    defaultPath: path.join(documentsPath, 'Discode Projects'),
+    defaultPath: path.join(documentsPath, isDev ? 'DEV-Discode Projects' : 'Discode Projects'),
     filters: [
       {name: "Discode Project File", extensions: ["discode"]}
     ],

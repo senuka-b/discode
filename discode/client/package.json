@@ -21,6 +21,7 @@
     "customize-cra": "^1.0.0",
     "electron-is-dev": "^3.0.1",
     "is-dev": "^0.1.4",
+    "isdev": "^1.0.1",
     "mui": "^0.0.1",
     "notistack": "^3.0.1",
     "path-browserify": "^1.0.1",
@@ -49,7 +50,6 @@
     "electron:build": "npm run build && electron-builder -c.extraMetadata.main=build/main.js",
     "electron:start": "wait-on tcp:3000 && electron ."
   },
-  
   "build": {
     "extends": null,
     "appId": "com.yeti.discode",

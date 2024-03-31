@@ -48,6 +48,8 @@ const InitialScreen = () => {
 
         fetchData();
 
+        
+
     // eslint-disable-next-line
     }, []);
 

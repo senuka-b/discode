@@ -2,6 +2,7 @@
 discode/client/dist/
 discode/server/build/
 discode/server/dist/
+bundled/
 *__pycache__/
 
 # Byte-compiled / optimized / DLL files

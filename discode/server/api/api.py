@@ -25,7 +25,7 @@ socket = SocketIO(app, cors_allowed_origins="*")
 messenger = SocketMessenger(socket)
 
 
-config = Configuration(debug=True)
+config = Configuration(debug=False)
 
 node_to_code = NodeToCode()
 
