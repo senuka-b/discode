@@ -1,11 +1,19 @@
-import requests, progressbar, subprocess, os
+import requests, progressbar, subprocess, os, sys, signal
 from urllib.request import urlretrieve
 import win32.lib.win32con as win32con
 import win32.win32gui as win32gui
 
+import psutil
 
 is_hidden = False
 pbar = None
+
+
+def kill(proc_pid):
+    process = psutil.Process(proc_pid)
+    for proc in process.children(recursive=True):
+        proc.send_signal(signal.SIGTERM)
+    process.send_signal(signal.SIGTERM)
 
 
 def show_progress(block_num, block_size, total_size):
@@ -70,25 +78,30 @@ def download_update(data):
 
 def execute_setup():
     subprocess.call(["temp-discode-setup.exe"])
-    exit()
+    os.remove("temp-discode-setup.exe")
+    sys.exit(0)
 
 
 def start_processes():
-    os.chdir("server/")
-    server = subprocess.Popen(["server.exe"], shell=True)
+    os.chdir("discode-server/")
+
+    print("Opening server")
+
+    server = subprocess.Popen(["discode-server.exe"], shell=False)
     os.chdir("../")
 
-    client = subprocess.Popen(["discode.exe"], shell=True)
+    print("Opening client")
+    client = subprocess.Popen(["discode.exe"], shell=False)
 
     client.wait()
-    server.kill()
+    kill(server.pid)
 
 
 def main():
     print(
         """
           
-          DISCODE LAUNCHER </>
+          DISCODE LAUNCHER </> v0.0.1
           
           Checking for updates hold on...
           
@@ -107,7 +120,6 @@ def main():
         execute_setup()
 
     else:
-        toggle_hide_show()
         start_processes()
 
 

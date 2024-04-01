@@ -45,19 +45,6 @@ class DiscodeBot(commands.Bot):
         self.synced = False
         self.is_running = False
 
-    async def _load_extensions(self) -> None:
-
-        for filename in os.listdir("bot/cogs"):
-            if filename.endswith(".py") and not filename.startswith("_"):
-                try:
-                    await self.load_extension(f"{self.ext_dir}.{filename[:-3]}")
-
-                    self.logger.info(f"Loaded extension {filename[:-3]}")
-                except commands.ExtensionError:
-                    self.logger.error(
-                        f"Failed to load extension {filename[:-3]}\n{traceback.format_exc()}"
-                    )
-
     async def on_error(
         self, event_method: str, *args: typing.Any, **kwargs: typing.Any
     ) -> None:
@@ -70,7 +57,7 @@ class DiscodeBot(commands.Bot):
 
     async def setup_hook(self) -> None:
         self.client = aiohttp.ClientSession()
-        await self._load_extensions()
+
         if not self.synced:
             await self.tree.sync()
             self.synced = not self.synced

@@ -6,10 +6,21 @@ VERSION = "v0.0.1"
 # Bundle the server
 os.chdir("server/")
 
-subprocess.call(["pyinstaller", "main.py", "--noconsole", "-n", "server"], shell=True)
+subprocess.call(
+    [
+        "pyinstaller",
+        "main.py",
+        "-n",
+        "discode-server",
+        "--noconfirm",
+        "-i",
+        "../client/public/icon.ico",
+    ],
+    shell=True,
+)
 
 # pyinstaller's add-data didn't seem to work
-shutil.copy("config.json", "dist/server/")
+shutil.copy("config.json", "dist/discode-server/")
 
 # Bundle the client
 os.chdir("../client/")
@@ -38,7 +49,9 @@ if not os.path.exists(VERSION):
 
     shutil.copytree("../server/dist/", VERSION + "/", dirs_exist_ok=True)
     shutil.copytree("../client/dist/win-unpacked/", VERSION, dirs_exist_ok=True)
-    shutil.copy("../launcher/dist/launcher.exe", VERSION)
+    shutil.copy(
+        "../launcher/dist/launcher.exe", f"{VERSION}/launcher.exe", follow_symlinks=True
+    )
 
     with open(f"{VERSION}/VERSION.txt", "w") as f:
         f.write(VERSION)

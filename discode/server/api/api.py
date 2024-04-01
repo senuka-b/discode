@@ -1,3 +1,5 @@
+import threading, signal, time
+
 from flask import Flask, jsonify, request
 
 from config.config import Configuration
@@ -184,4 +186,14 @@ def run_api():
     global bot
     bot = DiscodeBot()
 
-    socket.run(app)
+    def stop_api():
+        socket.stop()
+        thread.join()
+
+    signal.signal(signal.SIGTERM, lambda _, __: stop_api())
+
+    thread = threading.Thread(target=socket.run, args=(app,))
+    thread.start()
+
+    while True:  # Thread.join blocks signal call
+        pass

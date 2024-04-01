@@ -239,7 +239,7 @@ class ExtensionHandler:
 
     def get_project_data(self):
 
-        with open(self.path + "/" + self.project_name + ".discode", "r") as f:
+        with open(self.path + "/" + self.project_name, "r") as f:
             data = json.load(f)
 
             return data["data"]

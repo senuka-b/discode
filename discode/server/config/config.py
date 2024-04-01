@@ -6,7 +6,20 @@ class Configuration:
         self,
         debug=False,
     ):
-        self.location = "./config.json" if not debug else "./debug-config.json"
+        documents_dir = os.path.join(
+            os.path.expanduser("~"), "Documents", "Discode Projects"
+        )
+
+        self.location = (
+            documents_dir + "/config.json"
+            if not debug
+            else documents_dir + "/debug-config.json"
+        )
+
+        if not os.path.exists(self.location):
+            os.makedirs(documents_dir, exist_ok=True)
+
+            self.write_data(data={"settings": {}, "recent_projects": []})
 
         self.validate_project_paths()
 
