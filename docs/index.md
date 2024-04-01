@@ -3,14 +3,9 @@ title: "Home"
 
 hide:
   - navigation
+template: home.html
 
 
 
 ---
 
-# Welcome to the Discode Documentation!
-
-
-## Introduction
-
-Discode

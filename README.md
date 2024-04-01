@@ -82,7 +82,7 @@ npm run electron:serve
 
 ## Usage
 
-Documentation will be out soon!
+https://yetimeh.github.io/discode
 
 
 ## Note

@@ -3,28 +3,69 @@ site_url: https://yetimeh.github.io/discode
 repo_url: https://github.com/yetimeh/discode
 repo_name: yetimeh/discode
 
+
 theme:
   name: "material"
+  logo: "discode-icon.ico"
+  favicon: "discode-icon.ico"
+  custom_dir: "docs/overrides/"
   palette:
     scheme: slate
-    primary: teal
+    primary: black
     accent: purple
 
   features:
-    - search.suggest
-    - search.highlight
-    - header.autohide
-    - navigation.tabs
-
+    # - announce.dismiss
+    - content.code.copy
+    # - content.code.select
+    # - content.footnote.tooltips
+    # - content.tabs.link
+    - content.tooltips
+    # - header.autohide
     - navigation.expand
-
-    - navigation.path
+    - navigation.footer
+    - navigation.indexes
+    # - navigation.instant
+    # - navigation.instant.prefetch
+    # - navigation.instant.progress
+    # - navigation.prune
+    - navigation.sections
+    - navigation.tabs
+    # - navigation.tabs.sticky
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
     - toc.follow
+    # - toc.integrate
+  
 
   
 
 plugins:
   - search
+  - glightbox
 
 extra:
   generator: false
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+  - md_in_html
+
+nav: 
+  - Home: index.md
+  - Getting Started: 
+    - Installation: getting-started/installation.md
+    - Creating your first bot: getting-started/create-bot.md
+    - Creating your first project: getting-started/create-project.md
+    - Creating your first command: getting-started/create-command.md
+    - What's next?: getting-started/whats-next.md
