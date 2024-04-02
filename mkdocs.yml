@@ -69,3 +69,6 @@ nav:
     - Creating your first project: getting-started/create-project.md
     - Creating your first command: getting-started/create-command.md
     - What's next?: getting-started/whats-next.md
+
+  - Guides:
+    - Parameters:  guides/parameters.md
