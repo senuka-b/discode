@@ -24,6 +24,7 @@ import CreateExtension from './dialogs/create_extension';
 import RenameExtension from './dialogs/rename_extension';
 import ClearMessagesNode from './nodes/clear_messages';
 import KickUser from './nodes/kick_user';
+import PrintNode from './nodes/print';
 
 
 
@@ -35,7 +36,8 @@ const nodeTypes = {
   say: SayNode,
   get_channel: GetChannel,
   clear_messages: ClearMessagesNode,
-  kick_user: KickUser
+  kick_user: KickUser,
+  print: PrintNode,
 };
 
 const edgeTypes = {

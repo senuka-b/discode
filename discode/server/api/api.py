@@ -34,7 +34,7 @@ node_to_code = NodeToCode()
 bot: DiscodeBot = None
 
 COMPONENTS = {
-    "Special components": ["Command", "Event"],
+    "Special components": ["Command", "Event", "Print"],
     "Action components": ["Say", "Kick user", "Ban user", "Clear messages"],
     "Variable components": ["Get server", "Get user", "Get role", "Get channel"],
     "Check components": ["Permissions check", "Role check", "User check"],

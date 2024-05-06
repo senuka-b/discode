@@ -104,7 +104,10 @@ class DiscodeBot(commands.Bot):
             try:
 
                 callback = await node_to_code.create_callback(
-                    context=ctx, command=_command, arguments=arguments
+                    context=ctx,
+                    command=_command,
+                    arguments=arguments,
+                    messenger=messenger,
                 )
 
             except ChannelNotFound as e:

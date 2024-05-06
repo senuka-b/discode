@@ -11,12 +11,15 @@ import re
 
 sys.path.append("..")
 
+from api.socket import SocketMessenger
+
 from errors import ChannelNotFound, NoArgumentsPassed, MemberNotFound
 
 from .components.say import Say
 from .components.get_channel import GetChannel
 from .components.clear_messages import ClearMessages
 from .components.kick_user import KickUser
+from .components.print import Print
 
 
 class NonePlaceholder:
@@ -281,7 +284,13 @@ class NodeToCode:
 
         return actions
 
-    async def create_callback(self, context: Context, command: dict, arguments: str):
+    async def create_callback(
+        self,
+        context: Context,
+        command: dict,
+        arguments: str,
+        messenger: SocketMessenger,
+    ):
 
         context.command_node = command["name"]
 
@@ -355,6 +364,12 @@ class NodeToCode:
 
                 kick_user = KickUser(context, action["data"], arguments)
                 executions.append(kick_user)
+
+            elif action["type"] == "print":
+                print_ = Print(
+                    context, action["data"], arguments, messenger, action["id"]
+                )
+                executions.append(print_)
 
         async def callback(**kwargs):
             prev_result = None

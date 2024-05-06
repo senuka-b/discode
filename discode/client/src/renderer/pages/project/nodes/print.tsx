@@ -2,9 +2,7 @@ import { TextField } from '@mui/material';
 import React, {useState, useRef, useEffect} from 'react';
 import { Handle, Node, Position } from 'reactflow';
 
-import 'tailwindcss/tailwind.css';
-
-const SayNode = ({data, id}: {data: any, id: string}) => {
+const PrintNode = ({data, id}: {data: any, id: string}) => {
 
     const [text, setText] = useState(data['text'])
 
@@ -18,10 +16,10 @@ const SayNode = ({data, id}: {data: any, id: string}) => {
         <div  >
 
         {/* <NodeResizer color="#ff0071" isVisible={selected} minWidth={150} minHeight={maxHeight}  maxHeight={maxHeight}/> */}
-        <div    className="px-2 shadow-md rounded-md bg-pink-950 py-4 mr-40  size-full">
+        <div    className="px-2 shadow-md rounded-md bg-yellow-950 py-4 mr-40  size-full">
              <div className="ml-1  mt-1 ">
-                <div className="text-lg font-bold">Say</div>
-                <div className="text-gray-500 mt-3" style={{fontSize:12}}>required object: <em>TextChannel</em></div>
+                <div className="text-lg font-bold">Print</div>
+                <div className="text-gray-500 mt-3" style={{fontSize:12}}>Prints something in the console.</div>
 
 
                 <TextField onChange={(event) => {
@@ -39,7 +37,7 @@ const SayNode = ({data, id}: {data: any, id: string}) => {
 
 
 
-                }} fullWidth value={text} multiline label="Text"  InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}, }}  variant="filled" className='rounded-md nodrag ' error={false} helperText="" required size="small"/>
+                }} fullWidth value={text} multiline label="Any"  InputLabelProps={{style: { color: 'white', opacity: '70%' }, }} inputProps={{style: { color: 'white'}, }}  variant="filled" className='rounded-md nodrag ' error={false} helperText="" required size="small"/>
 
 
             </div>
@@ -57,4 +55,4 @@ const SayNode = ({data, id}: {data: any, id: string}) => {
      );
 }
 
-export default SayNode;
+export default PrintNode;
