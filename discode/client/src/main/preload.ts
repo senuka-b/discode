@@ -2,11 +2,11 @@
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
-export type Channels = 'ipc-example';
+export type Channels = any;
 
 const electronHandler = {
   ipcRenderer: {
-    sendMessage(channel: Channels, ...args: unknown[]) {
+    send(channel: Channels, ...args: unknown[]) {
       ipcRenderer.send(channel, ...args);
     },
     on(channel: Channels, func: (...args: unknown[]) => void) {
@@ -22,6 +22,27 @@ const electronHandler = {
       ipcRenderer.once(channel, (_event, ...args) => func(...args));
     },
   },
+
+  dialog: {
+    message: (msg: string) => {
+      ipcRenderer.send("show-dialog", msg);
+    }
+  },
+
+  openDocumentation: {
+    open: () => {
+      ipcRenderer.send("open-documentation");
+    }
+  },
+
+  openConsole: () => {
+    ipcRenderer.send("open-console");
+  } ,
+
+  saveConsoleState: (data: object) => {
+    ipcRenderer.send("save-console-state", data);
+  }
+
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);

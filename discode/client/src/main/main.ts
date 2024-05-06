@@ -1,3 +1,4 @@
+// @ts-ignore
 /* eslint global-require: off, no-console: off, promise/always-return: off */
 
 /**
@@ -9,19 +10,12 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
-import { autoUpdater } from 'electron-updater';
+import fs from 'fs';
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
-class AppUpdater {
-  constructor() {
-    log.transports.file.level = 'info';
-    autoUpdater.logger = log;
-    autoUpdater.checkForUpdatesAndNotify();
-  }
-}
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -42,6 +36,26 @@ const isDebug =
 if (isDebug) {
   require('electron-debug')();
 }
+
+async function createDiscodeProjectsFolder() {
+  const documentsPath = app.getPath('documents');
+  const discodeProjectsFolderPath = path.join(documentsPath, 'Discode Projects');
+
+  try {
+      await fs.promises.access(discodeProjectsFolderPath, fs.constants.F_OK);
+      console.log('Discode Projects folder already exists');
+  } catch (err) {
+      try {
+          await fs.promises.mkdir(discodeProjectsFolderPath, { recursive: true });
+          console.log('Discode Projects folder created successfully');
+
+      } catch (err) {
+          console.error('Error creating Discode Projects folder:', err);
+
+      }
+  }
+}
+
 
 const installExtensions = async () => {
   const installer = require('electron-devtools-installer');
@@ -81,6 +95,8 @@ const createWindow = async () => {
     },
   });
 
+  // await createDiscodeProjectsFolder();
+
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
@@ -91,8 +107,10 @@ const createWindow = async () => {
       mainWindow.minimize();
     } else {
       mainWindow.show();
+      mainWindow.maximize();
     }
   });
+
 
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -106,10 +124,6 @@ const createWindow = async () => {
     shell.openExternal(edata.url);
     return { action: 'deny' };
   });
-
-  // Remove this if your app does not use auto updates
-  // eslint-disable-next-line
-  new AppUpdater();
 };
 
 /**
@@ -135,3 +149,101 @@ app
     });
   })
   .catch(console.log);
+
+
+
+ipcMain.on('open-folder-dialog', (event) => {
+  const documentsPath = app.getPath('documents');
+
+
+  dialog.showOpenDialog({
+    defaultPath: path.join(documentsPath, 'Discode Projects'),
+    filters: [
+      {name: "Discode Project File", extensions: ["discode"]}
+    ],
+    properties: ['openDirectory']
+  }).then(result => {
+    if (!result.canceled) {
+      const folderPath = result.filePaths[0];
+      event.reply('selected-folder', folderPath);
+    }
+  }).catch(err => {
+    console.log(err);
+  });
+});
+
+
+ipcMain.on('open-file-dialog', (event) => {
+  const documentsPath = app.getPath('documents');
+
+
+  dialog.showOpenDialog({
+    defaultPath: path.join(documentsPath, 'Discode Projects'),
+    filters: [
+      {name: "Discode Project File", extensions: ["discode"]}
+    ],
+    properties: ['openFile']
+  }).then(result => {
+    if (!result.canceled) {
+      const folderPath = result.filePaths[0];
+      event.reply('selected-file', folderPath);
+    }
+  }).catch(err => {
+    console.log(err);
+  });
+});
+
+
+ipcMain.on('show-dialog', (event, data) => {
+  console.log(data);
+  dialog.showMessageBox({
+    type: 'error',
+    title: "That's already there",
+    message: data,
+    buttons: ['OK']
+})
+})
+
+ipcMain.on("open-documentation", (event) => {
+  shell.openExternal("https://yetimeh.github.io/discode/")
+})
+
+
+var console_state = [
+];
+
+ipcMain.on("open-console", (event) => {
+  const console_win = new BrowserWindow({
+    icon: path.join(__dirname, 'icon.ico'),
+    width: 864,
+
+    title: "Discode - Console </>",
+    height: 500,
+    webPreferences: {
+      nodeIntegration: true,
+
+      preload: path.join(__dirname, 'preload.js')
+    }
+  })
+
+
+  console_win.setMenuBarVisibility(false);
+
+
+
+
+  console_win.webContents.on('did-finish-load', () => {
+    console_win.setTitle("Discode - Console </>",)
+  });
+
+
+
+
+})
+
+ipcMain.on("clicked-log", (event, node) => mainWindow!.webContents.send("clicked-log", node))
+
+
+ipcMain.on("save-console-state", (event, data) => {
+  console_state = data;
+})
