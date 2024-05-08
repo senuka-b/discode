@@ -292,7 +292,7 @@ class NodeToCode:
         messenger: SocketMessenger,
     ):
 
-        context.command_node = command["name"]
+        context.command_node = command["id"]
 
         arguments = await self.parse_arguments(
             command["parameters"], arguments, ctx=context
