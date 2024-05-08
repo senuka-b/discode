@@ -6,7 +6,7 @@ class SocketMessenger:
         self.socket = socket
 
     def error(self, message: str, node: str = None):
-        self.socket.emit("error", {"node": node, "message": message})
+        self.socket.emit("log", {"node": node, "message": message, "type": "error"})
 
     def print(self, message: str, node: str = None):
-        self.socket.emit("message", {"node": node, "message": message})
+        self.socket.emit("log", {"node": node, "message": message, "type": "print"})

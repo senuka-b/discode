@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import React, { FC } from 'react';
 import { EdgeProps, getSmoothStepPath, EdgeLabelRenderer, BaseEdge, MarkerType } from 'reactflow';
 
@@ -20,7 +22,7 @@ const Then = ({
     targetX,
     targetY,
     targetPosition,
-    
+
   });
 
   return (
@@ -31,7 +33,7 @@ const Then = ({
           style={{
             position: 'absolute',
             transform: `translate(0%, 0%) translate(${labelX}px,${labelY}px)`,
-          
+
             padding: 10,
             borderRadius: 5,
             fontSize: 12,
@@ -40,9 +42,9 @@ const Then = ({
           className="nodrag nopan"
         >
           {data.label}
-          
 
-          
+
+
         </div> */}
 
         <div

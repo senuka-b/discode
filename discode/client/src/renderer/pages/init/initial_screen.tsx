@@ -24,6 +24,10 @@ const InitialScreen = () => {
 
     const navigate = useNavigate();
 
+    window.electron.ipcRenderer.on("switch-to-console", () => {
+      navigate("/console");
+    })
+
 
     const handleClickOpen = () => {
         setOpen(true);

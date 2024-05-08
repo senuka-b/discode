@@ -9,7 +9,7 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import path from 'path';
+import path, { resolve } from 'path';
 import fs from 'fs';
 import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import log from 'electron-log';
@@ -18,6 +18,7 @@ import { resolveHtmlPath } from './util';
 
 
 let mainWindow: BrowserWindow | null = null;
+let consoleWindow: BrowserWindow | null = null;
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
@@ -70,6 +71,7 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
+
 const createWindow = async () => {
   if (isDebug) {
     await installExtensions();
@@ -83,11 +85,13 @@ const createWindow = async () => {
     return path.join(RESOURCES_PATH, ...paths);
   };
 
+
   mainWindow = new BrowserWindow({
     show: false,
     width: 1024,
     height: 728,
-    icon: getAssetPath('icon.png'),
+    title: "Discode",
+    icon: getAssetPath('icon.ico'),
     webPreferences: {
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
@@ -95,7 +99,7 @@ const createWindow = async () => {
     },
   });
 
-  // await createDiscodeProjectsFolder();
+  await createDiscodeProjectsFolder();
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
@@ -106,6 +110,7 @@ const createWindow = async () => {
     if (process.env.START_MINIMIZED) {
       mainWindow.minimize();
     } else {
+      mainWindow.setTitle("Discode")
       mainWindow.show();
       mainWindow.maximize();
     }
@@ -114,6 +119,7 @@ const createWindow = async () => {
 
   mainWindow.on('closed', () => {
     mainWindow = null;
+    consoleWindow = null;
   });
 
   const menuBuilder = new MenuBuilder(mainWindow);
@@ -124,7 +130,40 @@ const createWindow = async () => {
     shell.openExternal(edata.url);
     return { action: 'deny' };
   });
+
+   consoleWindow = new BrowserWindow({
+    show: false,
+    width: 864,
+    height: 500,
+    title: "Discode",
+    icon: getAssetPath('icon.ico'),
+    webPreferences: {
+      preload: app.isPackaged
+        ? path.join(__dirname, 'preload.js')
+        : path.join(__dirname, '../../.erb/dll/preload.js'),
+    },
+  });
+
+
+  consoleWindow.setMenuBarVisibility(false);
+  consoleWindow.loadURL(resolveHtmlPath("index.html"))
+
+
+  consoleWindow.webContents.on('did-finish-load', () => {
+    consoleWindow!.setTitle("Discode - Console </>",)
+    consoleWindow!.webContents.send("switch-to-console");
+
+  });
+
+  consoleWindow.on("close", (e) => {
+    e.preventDefault()
+    consoleWindow?.hide();
+  })
+
+
 };
+
+
 
 /**
  * Add event listeners...
@@ -209,41 +248,35 @@ ipcMain.on("open-documentation", (event) => {
 })
 
 
-var console_state = [
-];
+
+
 
 ipcMain.on("open-console", (event) => {
-  const console_win = new BrowserWindow({
-    icon: path.join(__dirname, 'icon.ico'),
-    width: 864,
+  console.log("Opened console")
 
-    title: "Discode - Console </>",
-    height: 500,
-    webPreferences: {
-      nodeIntegration: true,
+  if (!consoleWindow?.isVisible()) {
+    consoleWindow?.show()
+  } else {
 
-      preload: path.join(__dirname, 'preload.js')
-    }
-  })
+    consoleWindow?.focus()
+  }
 
 
-  console_win.setMenuBarVisibility(false);
-
-
-
-
-  console_win.webContents.on('did-finish-load', () => {
-    console_win.setTitle("Discode - Console </>",)
-  });
 
 
 
 
 })
 
-ipcMain.on("clicked-log", (event, node) => mainWindow!.webContents.send("clicked-log", node))
+ipcMain.on("clicked-log", (event, node) => {
+  mainWindow!.webContents.send("clicked-log", node)
+  mainWindow?.focus()
 
-
-ipcMain.on("save-console-state", (event, data) => {
-  console_state = data;
 })
+
+ipcMain.on("send-log", (event, data) => {
+  console.log("Send-log in home")
+  consoleWindow?.webContents.send("send-log", data)
+})
+
+

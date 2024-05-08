@@ -66,6 +66,8 @@ const ProjectHomeComponent = () => {
 
   const [extensions, setExtensions] = useState<string[]>([]);
 
+  var logs: {message: string, node: string, type: string}[] = [];
+
   const {state} = useLocation();
 
   console.log("State", state)
@@ -125,17 +127,27 @@ const ProjectHomeComponent = () => {
 
 
   useEffect(() => {
-    socket.on('error', ({ message }) => {
 
-      console.log("ERROR:", message);
 
-      enqueueSnackbar(message,  {variant: "error", anchorOrigin: {horizontal: "right", vertical: "bottom"}} );
+    socket.on('log', ({ message, node, type }) => {
+
+
+      enqueueSnackbar(message,  {variant: type === "error" ? type : "success", anchorOrigin: {horizontal: "right", vertical: "bottom"}} );
+
+      console.log(logs)
+
+      window.electron.ipcRenderer.send("send-log", [...logs, {message, node, type}]);
+
+      console.log("Log received")
+      console.log([...logs, {message, node, type}])
+
+      logs.push({message, node, type})
+      return
+
     });
 
-
-
     return () => {
-      socket.off('error');
+      socket.off('log');
 
     };
   }, []);
@@ -151,6 +163,9 @@ const ProjectHomeComponent = () => {
 
     }
   }, [])
+
+
+
 
 
 
@@ -237,7 +252,8 @@ const ProjectHomeComponent = () => {
               params.source!.includes("say") ?  ["TextChannel", "Message"] :
               params.source!.includes("get_channel") ? ["TextChannel", ] :
               params.source!.includes("clear_messages") ? ["List of Messages"] :
-              params.source!.includes("kick_user") ? ["Member"] : "",
+              params.source!.includes("kick_user") ? ["Member"] :
+              params.source!.includes("print") ? [""] : "",
         }}, eds
 
         )

@@ -3,39 +3,29 @@ import {useLocation} from 'react-router-dom'
 import { io } from 'socket.io-client'
 
 export default function Console() {
-  const [logs, setlogs] = useState([])
+  const [logs, setlogs] = useState<any>([])
 
   const location = useLocation();
 
-  useEffect(() => {
-      const queryParams = new URLSearchParams(location.search);
-      const rawData = queryParams.get('data');
-      if (rawData) {
-          const decodedData = decodeURIComponent(rawData);
-          setlogs(JSON.parse(decodedData));
-      }
-
-      console.log(logs);
-  }, []);
 
 
-
-  var socket = io('http://localhost:5000')
-
-  socket.on("error", ( {message, node} )=> {
-    message = `ERROR: ${message}`
-
-    window.electron.saveConsoleState([...logs, {message, node}]);
-
-    setlogs([...logs, {message, node}])
-
-
-
+useEffect(() => {
+  window.electron.ipcRenderer.on("send-log", (logs) => {
+    console.log(logs);
+    setlogs(logs);
   })
 
-  const handleClickLog = (node) => {
+
+}, [])
+
+
+
+
+  const handleClickLog = (node: string) => {
 
     window.electron.ipcRenderer.send('clicked-log', node);
+
+
   }
 
 
@@ -43,16 +33,18 @@ export default function Console() {
     <div style={{
         paddingLeft: 20,
 
-        paddingtop: 30,
-        margin: 10
+        margin: 10,
+
+
 
 
     }}>
         {logs.length === 0 ? "No logs yet!" :  (
     <div>
-        {logs.map(({message, node}, index) => (
+        {logs.map(({message, node, type}:{message: string, node: string, type: string}, index: number) => (
             <div>
-                    <div className='logDiv' style={{paddingBottom: 10, fontFamily: 'Consolas, Lucida Console', color:message.startsWith("ERROR") ? 'red' : 'cyan',}} onClick={() =>{ handleClickLog(node)}} >
+                    <div className='logDiv' style={{paddingBottom: 10, fontFamily: 'Consolas, Lucida Console', color:type ===
+                    "error" ? 'red' : 'cyan',}} onClick={() =>{ handleClickLog(node)}} >
                         {message}
 
                     </div>

@@ -39,9 +39,6 @@ const electronHandler = {
     ipcRenderer.send("open-console");
   } ,
 
-  saveConsoleState: (data: object) => {
-    ipcRenderer.send("save-console-state", data);
-  }
 
 };
 
