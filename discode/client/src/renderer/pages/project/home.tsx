@@ -66,7 +66,7 @@ const ProjectHomeComponent = () => {
 
   const [extensions, setExtensions] = useState<string[]>([]);
 
-  var logs: {message: string, node: string, type: string}[] = [];
+  var logs: {message: string, node: string, type: string, time: string}[] = [];
 
   const {state} = useLocation();
 
@@ -129,19 +129,16 @@ const ProjectHomeComponent = () => {
   useEffect(() => {
 
 
-    socket.on('log', ({ message, node, type }) => {
+    socket.on('log', ({ message, node, type, time }) => {
 
 
       enqueueSnackbar(message,  {variant: type === "error" ? type : "success", anchorOrigin: {horizontal: "right", vertical: "bottom"}} );
 
       console.log(logs)
 
-      window.electron.ipcRenderer.send("send-log", [...logs, {message, node, type}]);
+      window.electron.ipcRenderer.send("send-log", [...logs, {message, node, type, time}]);
 
-      console.log("Log received")
-      console.log([...logs, {message, node, type}])
-
-      logs.push({message, node, type})
+      logs.push({message, node, type, time})
       return
 
     });
