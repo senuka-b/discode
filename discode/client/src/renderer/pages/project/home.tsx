@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import ReactFlow, { useNodesState, useEdgesState, addEdge, Node, Background,  Controls, Panel, ReactFlowProvider, MarkerType, useReactFlow, ReactFlowInstance, Connection, BackgroundVariant } from 'reactflow';
+import ReactFlow, { useNodesState, useEdgesState, addEdge, Node, Background,  Controls, Panel, ReactFlowProvider, MarkerType, useReactFlow, useStoreApi, ReactFlowInstance, Connection, BackgroundVariant } from 'reactflow';
 
 import { useSnackbar } from 'notistack';
 
@@ -149,11 +149,38 @@ const ProjectHomeComponent = () => {
     };
   }, []);
 
+  const {  setCenter } = useReactFlow();
+  const store = useStoreApi();
+
+  const focusNode = (node_to_focus: any) => {
+
+    const { nodeInternals } = store.getState();
+
+    const nodes = Array.from(nodeInternals).map(([, node]) => node);
+
+
+    if (nodes.length > 0) {
+      console.log("yes")
+      const node = nodes.find((node) => node.id === node_to_focus);
+
+      console.log("Node found", node)
+
+      const x = node!.position.x + node!.width! / 2;
+      const y = node!.position.y + node!.height! / 2;
+      const zoom = 1.85;
+
+      console.log(x,y)
+
+      setCenter(x, y, { zoom, duration: 10 });
+    }}
+
+
   useEffect(() => {
 
 
     window.electron.ipcRenderer.on("clicked-log", (node) => {
       console.log("clicked node", node);
+      focusNode(node)
     })
 
     return () => {
@@ -427,6 +454,7 @@ const ProjectHomeComponent = () => {
 
 
   }
+
 
 
 
