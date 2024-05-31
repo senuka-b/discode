@@ -141,6 +141,37 @@ function CommandNode({ data, id }: {data: any, id: string}) {
  const [command_name, setCommand_name] = useState('')
  const [description, setDescription] = useState('')
 
+ if (data.command_name !== command_name) {
+  setCommand_name(data.command_name);
+
+ }
+
+ if (data.description !== description) {
+  setDescription(data.description);
+
+ }
+
+
+
+
+ console.log("Parameters", data["parameters"])
+
+ useEffect(() => {
+
+    var _params = data["parameters"].map((element: any, index: number) => (
+      <ParameterComponent
+          data={data}
+          index={index}
+          node_id={id}
+          handleDeleteParameter={handleDeleteParameter}
+      />
+    ))
+
+    setParameters(_params);
+
+
+ }, [])
+
 
  const handleDeleteParameter = (index: number, node_id: string) => {
     data.setNodes((prev_nodes: Node[]) => prev_nodes.map((node) => {
@@ -213,30 +244,8 @@ function CommandNode({ data, id }: {data: any, id: string}) {
 
 
 
- useEffect(() => {
 
-    if (data.command_name !== command_name) {
-        setCommand_name(data.command_name);
-      }
 
-    if (data.description !== description) {
-       setDescription(data.description);
-    }
-
-    console.log("Parameters", data["parameters"])
-
-    var _params = data["parameters"].map((element: any, index: number) => (
-        <ParameterComponent
-            data={data}
-            index={index}
-            node_id={id}
-            handleDeleteParameter={handleDeleteParameter}
-        />
-    ))
-
-    setParameters(_params);
-
- }, [])
 
 
 

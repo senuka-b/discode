@@ -14,6 +14,8 @@ import Sidebar from './sidebar/sidebar';
 
 import Then from './nodes/edges/then';
 import { Box, Button, IconButton, Stack, Tab, Tabs } from '@mui/material';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 import { Add, HelpOutline, Refresh, Stop, Terminal } from '@mui/icons-material';
 import GetChannel from './nodes/get_channel';
 
@@ -65,6 +67,7 @@ const ProjectHomeComponent = () => {
   const [rightClickedExtension, setrightClickedExtension] = useState('')
 
   const [extensions, setExtensions] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
   var logs: {message: string, node: string, type: string, time: string}[] = [];
 
@@ -97,6 +100,8 @@ const ProjectHomeComponent = () => {
 
 
   const switch_extension = (extension_name: string) => {
+    setLoading(true)
+
     api.getExtension(state.path, extension_name).then((value) => {
 
         console.log("NODES_", value.nodes);
@@ -119,6 +124,8 @@ const ProjectHomeComponent = () => {
 
 
         // setViewport(value.viewport,);
+    }).finally(() => {
+      setLoading(false)
     })
   }
 
@@ -461,15 +468,15 @@ const ProjectHomeComponent = () => {
   return (
 
 
-
-
-
-      <div  style={{
+  <div  style={{
         height: "100vh",
         width: "100wh"
 
 
       }}>
+
+
+
       <ReactFlow
 
 
@@ -502,6 +509,8 @@ const ProjectHomeComponent = () => {
 
 
       >
+
+
         <Panel position='top-center'>
 
 
@@ -599,13 +608,25 @@ const ProjectHomeComponent = () => {
         {/* <MiniMap /> */}
         <Controls />
 
+
       </ReactFlow>
 
       <CreateExtension path={path} dialogOpen={dialogCreatExtensionOpen} handleDialogClose={handleDialogCreateExtension} />
 
       <RenameExtension extension={rightClickedExtension} path={path}  dialogOpen={dialogRenameExtensionOpen} handleDialogClose={handleDialogRenameExtension} />
 
-      </div>
+
+      <Backdrop
+      sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 ,}}
+      open={loading}
+
+    >
+    <CircularProgress color="inherit" />
+
+      </Backdrop>
+
+    </div>
+
 
 
 
