@@ -108,7 +108,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.16.0",
     "reactflow": "^11.11.3",
-    "socket-io": "^1.0.0",
+    "socket.io": "^1.0.0",
     "socket.io-client": "^4.7.5",
     "uuid": "^9.0.1",
     "uuidv4": "^6.2.13"
@@ -250,10 +250,6 @@
   },
   "collective": {
     "url": "https://opencollective.com/electron-react-boilerplate-594"
-  },
-  "devEngines": {
-    "node": ">=14.x",
-    "npm": ">=7.x"
   },
   "electronmon": {
     "patterns": [

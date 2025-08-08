@@ -5,7 +5,7 @@ import json, os, re
 class ExtensionHandler:
     def __init__(self, **kwargs):
 
-        self.path: str = kwargs.get("path")
+        self.path: str = "/"+kwargs.get("path")
 
         if self.path.endswith(".discode"):
 

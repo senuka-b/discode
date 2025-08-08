@@ -28,6 +28,11 @@ const configuration: webpack.Configuration = {
           },
         },
       },
+      {
+        test: /\.map$/,
+        use: 'ignore-loader'
+      }
+      
     ],
   },
 
